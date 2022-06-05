@@ -1,0 +1,23 @@
+## folders
+.venv/
+.env/
+__pycache__/
+*/__pycache__/
+.pytest_cache/
+*/.pytest_cache/
+
+
+## files
+*.pyc
+*/test.py
+# */test*.py
+*.log
+storage.json
+storage copy.json
+test.json
+test copy.json
+history.json
+my.db
+
+# dotenv
+.env
