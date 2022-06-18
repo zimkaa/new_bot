@@ -18,6 +18,7 @@ test.json
 test copy.json
 history.json
 my.db
+*.log.zip
 
 # dotenv
 .env

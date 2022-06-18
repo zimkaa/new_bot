@@ -1,0 +1,38 @@
+{
+  "BTC": {
+    "amount": 0.00246,
+    "balanse": 0.0,
+    "buyPrice": 0.0,
+    "buyTime": "2022-06-11 11:11:11",
+    "currentPrice": 0.0,
+    "desiredPriceFall": 0.4,
+    "history": {
+      "buy": [],
+      "sell": []
+    },
+    "sellPrice": 0.0,
+    "sellTime": "2022-06-11 11:11:11",
+    "status": {
+      "buy": true
+    },
+    "stopLossPrice": 0.0
+  },
+  "NEAR": {
+    "amount": 6.0,
+    "balanse": 0.0,
+    "buyPrice": 0.0,
+    "buyTime": "2022-06-11 11:11:11",
+    "currentPrice": 0.0,
+    "desiredPriceFall": 1.0,
+    "history": {
+      "buy": [],
+      "sell": []
+    },
+    "sellPrice": 0.0,
+    "sellTime": "2022-06-11 11:11:11",
+    "status": {
+      "buy": true
+    },
+    "stopLossPrice": 0.0
+  }
+}

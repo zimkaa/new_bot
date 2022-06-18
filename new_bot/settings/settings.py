@@ -1,6 +1,7 @@
 import os
-from dotenv import load_dotenv
 from decimal import Decimal
+
+from dotenv import load_dotenv
 
 
 load_dotenv()
@@ -22,6 +23,8 @@ STOP_LOSS = os.getenv("STOP_LOSS")
 PERCENTAGE_COMMISSION = Decimal(os.getenv("PERCENTAGE_COMMISSION"))
 
 COEFFICIENT_FOR_PROFIT = 1 + (PERCENTAGE_COMMISSION * 2 + PERCENTAGE_COMMISSION * 2 / 10) / 100
+
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 TRIGGER_PRICE_FALL_PER_MINUTE = Decimal(os.getenv("TRIGGER_PRICE_FALL_PER_MINUTE"))

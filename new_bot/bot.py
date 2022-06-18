@@ -1,19 +1,20 @@
 #!/usr/bin/env python3.10
-import time
-from datetime import datetime
 import json
 import logging
-from typing import Optional, Dict
-from enum import Enum, unique
+import time
+from typing import Dict
+
+from loguru import logger
 
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
-from loguru import logger
-from pydantic import BaseModel, ValidationError
 
-from local_schema import Settings, Ratios, CoinInfo
-from logic import action_with_each_coin, get_max_price, get_klines_for_period, get_max_price, to_buy
-from settings import TOKEN, RISE_UP_TO, DOWN_TO, STOP_LOSS
+from telegram.ext import CallbackContext, CommandHandler, Updater
+
+from logic import action_with_each_coin
+
+from schemas import Ratios, Settings, ValidationError
+
+from settings import TOKEN
 
 
 # Enable logging
@@ -172,12 +173,30 @@ def main() -> None:
     updater.idle()
 
 
-# if __name__ == "__main__":
-#     main()
-#     # read_settings("settings.json")
-
 if __name__ == "__main__":
-    # price = get_klines_for_period("BTC", limit=50)
-    # max_price = get_max_price(price)
-    # print(f"{max_price=} {type(max_price)}")
-    to_buy()
+
+    user_settings = read_settings("settings.json")
+
+    # START WHILE
+    logger.info("while True")
+    try:
+        while True:
+            logger.info("Iteration")
+            with open("storage.json", "r", encoding="utf8") as my_coins_data:
+                my_coins = json.loads(my_coins_data.read())
+
+            with open("state.json", "r", encoding="utf8") as my_coins_data:
+                my_state = json.loads(my_coins_data.read())
+
+            send, final_message = action_with_each_coin(my_coins, user_settings, my_state)
+
+            if send:
+                # job = context.job
+                text = "\n".join(final_message)
+                # context.bot.send_message(job.context, text=text)
+                logger.error(text)
+
+            logger.info("END Iteration")
+            time.sleep(60)
+    except KeyboardInterrupt:
+        logger.info("Stopped by user")
