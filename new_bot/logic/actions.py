@@ -1,5 +1,6 @@
 import json
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
+from typing import List, Optional, Union
 
 from loguru import logger
 
@@ -7,10 +8,10 @@ from connection import client
 
 from schemas import CoinInfo, Kline, TradeStatus, ValidationError
 
-from settings import COEFFICIENT_FOR_PROFIT
+from settings import COEFFICIENT_FOR_PROFIT, ROUNDING
 
 
-def get_klines_for_period(coin_name: str, *, interval: str = "1m", limit: int = 240) -> list[Kline]:
+def get_klines_for_period(coin_name: str, *, interval: str = "1m", limit: int = 240) -> List[Kline]:
     """Get maximum price
 
     :param coin_name: coin name (tiker)
@@ -97,7 +98,8 @@ def update_storage(
     status_buy: bool,
     type_operation: str,
     time: str,
-    user_settings: dict = None,
+    user_settings: Optional[dict] = None,
+    stop_loss_reason: bool = False,
 ) -> bool:
     """
     Function to update storage
@@ -120,12 +122,16 @@ def update_storage(
     try:
         with open("storage.json", "r+", encoding="utf8") as my_coins_data:
             my_coins = json.loads(my_coins_data.read())
+            history_dict = {"time": time, "price": coin_price}
             # if type_operation == TradeStatus.BUY.value:
             if type_operation == TradeStatus.BUY:
                 my_coins[coin_name]["buyPrice"] = coin_price
                 my_coins[coin_name]["buyTime"] = time
                 my_coins[coin_name]["sellPrice"] = 0.0
-                stop_loss_price = coin_price * user_settings["stop_loss_ratio"]
+                if user_settings:
+                    stop_loss_price = coin_price * user_settings["stop_loss_ratio"]
+                else:
+                    logger.warning("Trouble wuth writing stop_loss_ratio")
                 my_coins[coin_name]["stopLossPrice"] = stop_loss_price
                 # logger.info(f"Write buyPrice = {coin_price}")
                 # logger.info(f"Write stop_loss_price = {stop_loss_price}")
@@ -137,13 +143,13 @@ def update_storage(
                 my_coins[coin_name]["sellTime"] = time
                 my_coins[coin_name]["stopLossPrice"] = 0.0
                 my_coins[coin_name]["balanse"] += possible_profit
+                history_dict["stopLossReason"] = stop_loss_reason
             # my_coins[coin_name]['currentPrice'] = coin_price
-            my_coins[coin_name]["history"][type_operation].append(coin_price)
+            my_coins[coin_name]["history"][type_operation].append(history_dict)
             my_coins[coin_name]["amount"] = amount
             my_coins[coin_name]["status"]["buy"] = status_buy
             # if user_settings:
             #     my_coins[coin_name]['stopLossPrice'] = coin_price * user_settings['stop_loss_ratio']
-
             try:
                 CoinInfo.parse_obj(my_coins[coin_name])
             except ValidationError as e:
@@ -158,7 +164,25 @@ def update_storage(
         return False
 
 
-def update_stop_loss_price(coin_name: str, stop_loss_price: float):
+def search_changes(item: Kline) -> Decimal:
+    change = 1 - item.open_price / item.close_price
+    return Decimal(change)
+
+
+def rounding_to_decimal(some_value: Union[float, Decimal]) -> Decimal:
+    if isinstance(some_value, float):
+        rouded_value = Decimal(some_value)
+    else:
+        rouded_value = some_value
+    return rouded_value.quantize(Decimal(ROUNDING), rounding=ROUND_DOWN)
+
+
+def rounding_to_float(some_value: Decimal) -> float:
+    rounded = some_value.quantize(Decimal(ROUNDING), rounding=ROUND_DOWN)
+    return float(rounded)
+
+
+def update_stop_loss_price(coin_name: str, stop_loss_price: float) -> bool:
     try:
         with open("storage.json", "r+", encoding="utf8") as my_coins_data:
             my_coins = json.loads(my_coins_data.read())
@@ -173,7 +197,8 @@ def update_stop_loss_price(coin_name: str, stop_loss_price: float):
             # logger.info(f'Set new {stop_loss_price=}')
         return True
 
-    except Exception:
+    except Exception as err:
+        logger.warning(f"Trouble {err=}")
         return False
 
 
@@ -183,7 +208,7 @@ def set_order_with_stop_loss(
     old_price_stop_loss: float,
     *,
     amount: float = None,
-):
+) -> bool:
     """Need to write new code
 
     :param coin_name: coin name. Examle: 'BTC'
@@ -211,8 +236,10 @@ def set_order_with_stop_loss(
             my_coins_data.seek(0)
             my_coins_data.write(json.dumps(my_coins, sort_keys=True, indent=2))
             my_coins_data.truncate()
+        return True
     except Exception as err:
         logger.error(f"Something rong with query stop loss \n {err}")
+        return False
 
 
 def get_stop_loss_price(price: float, stop_loss_ratio: float) -> float:
@@ -266,7 +293,7 @@ def get_min_price(coin_name: str, *, interval: str = "1m") -> float:
     return min_price
 
 
-def get_max_price_new(list_of_price: list[Kline]) -> float:
+def get_max_price_new(list_of_price: List[Kline]) -> float:
     """Get maximum price
 
     :param list_of_price: list of prices

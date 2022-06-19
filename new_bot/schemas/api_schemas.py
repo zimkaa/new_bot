@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, unique
-from typing import List
+from typing import List, Optional
 
 import attr
 
@@ -57,9 +57,22 @@ class Store(BaseModel, extra=Extra.forbid):
     coin_name: str
 
 
+class ByInfo(BaseModel, extra=Extra.forbid):
+    time: str
+    price: not_negative_float
+
+
+class SellInfo(BaseModel, extra=Extra.forbid):
+    time: str
+    price: not_negative_float
+    stop_loss_reason: bool = Field(alias="stopLossReason")
+
+
 class History(BaseModel, extra=Extra.forbid):
-    buy: List[not_negative_float]
-    sell: List[not_negative_float]
+    # buy: List[not_negative_float]
+    # sell: List[not_negative_float]
+    buy: List[Optional[ByInfo]]
+    sell: List[Optional[SellInfo]]
 
 
 class Status(BaseModel, extra=Extra.forbid):
