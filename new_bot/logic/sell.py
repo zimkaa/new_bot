@@ -28,11 +28,11 @@ from .actions import (
 def check_change_proffit(coin_name: str, item: Kline, list_klines: List[Kline], coin_info: dict) -> bool:
     price = read_store_buy_price(coin_name)
     profit_price = price * COEFFICIENT_FOR_PROFIT
-    # stop_loss_price = read_store_stop_loss_price(coin_name)
-    stop_loss_price = coin_info["stopLossPrice"]
+    stop_loss_price = Decimal(coin_info["stopLossPrice"])
 
     if stop_loss_price > Decimal(list_klines[-2].close_price):
         logger.warning(f"Stoploss sell check_change_proffit {coin_name}")
+        logger.debug(f"Down is more then TRIGGER_PRICE_FALL_PER_MINUTE {-TRIGGER_PRICE_FALL_PER_MINUTE}")
         logger.error(f"We need to sell now check_change_proffit {coin_name} {list_klines[-1].time_open}")
         return True
 
@@ -55,6 +55,8 @@ def should_i_sell(rounded_change: Decimal, offset: int, list_klines: List[Kline]
     stop_loss_price = coin_info["stopLossPrice"]
     buy_price = Decimal(coin_info["buyPrice"])
     new_offset = offset - 1
+    # reversed_list_klines = list_klines[::-1]  # Not right!!!
+    # for element in reversed_list_klines[new_offset:]:  # Not right!!!
     for element in list_klines[new_offset::-1]:
         change = search_changes(element)
         rounded_change = rounding_to_decimal(change)
@@ -70,6 +72,7 @@ def should_i_sell(rounded_change: Decimal, offset: int, list_klines: List[Kline]
             logger.error(
                 f"Sell info Now_close_price={list_klines[-1].close_price} time_open={list_klines[-1].time_open}"
             )
+            logger.warning("Sell with profit!!!")
             return True
         elif rounded_change > 0:
             logger.info("Fall not enough to sell")
@@ -83,12 +86,12 @@ def should_i_sell(rounded_change: Decimal, offset: int, list_klines: List[Kline]
 
 def check_stop_loss(list_klines: List[Kline], coin_name: str) -> bool:
     kline_offset = -2
-    item = list_klines[kline_offset]
+    close_price = Decimal(list_klines[kline_offset].close_price)
 
     coin_info = reed_store(coin_name)
     stop_loss_price = coin_info["stopLossPrice"]
 
-    if stop_loss_price > Decimal(item.close_price):
+    if stop_loss_price > close_price:
         logger.warning(f"Stoploss sell {coin_name}")
         logger.error(f"We need to sell now {coin_name} {list_klines[-1].time_open}")
         return True
@@ -104,6 +107,7 @@ def check_fall(list_klines: List[Kline], coin_name: str) -> bool:
     if rounded_change < 0:
         coin_info = reed_store(coin_name)
         if rounded_change <= -TRIGGER_PRICE_FALL_PER_MINUTE:
+            logger.info(f"Check check_change_proffit {coin_name}")
             return check_change_proffit(coin_name, item, list_klines, coin_info)
         else:
             logger.info(f"Check should_i_sell {coin_name}")
@@ -123,7 +127,7 @@ def check_fall(list_klines: List[Kline], coin_name: str) -> bool:
 
 
 def to_sell(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, bool]:
-    list_klines = get_klines_for_period(coin_name, limit=200)
+    list_klines = get_klines_for_period(coin_name, limit=60)
 
     message = ""
     send = True

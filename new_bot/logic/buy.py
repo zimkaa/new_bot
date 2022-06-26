@@ -10,7 +10,7 @@ from settings import (
     COEFFICIENT_WAIT_AFTER_SELL,
     COEFFICIENT_WAIT_FOR_BUY,
     TIME_FORMAT,
-    TRIGGER_PRICE_FALL_PER_MINUTE,
+    TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY,
 )
 
 from .actions import (
@@ -43,10 +43,12 @@ def check_change(list_klines: List[Kline], coin_name: str) -> bool:
     change = 1 - list_klines[offset].open_price / list_klines[offset].close_price
     # change_persent = Decimal(change).quantize(Decimal(ROUNDING), rounding=ROUND_DOWN)
     change_persent = rounding_to_decimal(change)
-    if change_persent <= -TRIGGER_PRICE_FALL_PER_MINUTE and coin_price < (sell_price * COEFFICIENT_WAIT_AFTER_SELL):
+    if change_persent <= -TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY and coin_price < (
+        sell_price * COEFFICIENT_WAIT_AFTER_SELL
+    ):
         # logger.info(f"yes {item.time_open}")
         change_before = 1 - list_klines[offset - 1].open_price / list_klines[offset - 1].close_price
-        if change_before < abs(change_persent + TRIGGER_PRICE_FALL_PER_MINUTE):
+        if change_before < abs(change_persent + TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY):
             logger.debug(f"Trigger to buy {coin_name} {change_persent=} time={list_klines[offset].time_open}")
             return True
     return False

@@ -25,7 +25,7 @@ def get_price(coin_name: str) -> float:
     return float(price)
 
 
-def choose_an_action(status: bool = None) -> str:
+def choose_an_action(status: bool) -> str:
     """
     Choose the next action
 
@@ -34,14 +34,12 @@ def choose_an_action(status: bool = None) -> str:
     :return: name of the doing
     :rtype: str
     """
-    if status is None:
-        return TradeStatus.START
     if status:
         return TradeStatus.BUY
     return TradeStatus.SELL
 
 
-ACTION = {"start": to_buy, "buy": to_buy, "sell": to_sell}
+ACTION = {"BUY": to_buy, "SELL": to_sell}
 
 
 def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -> tuple:

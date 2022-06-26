@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from enum import Enum, unique
 from typing import List, Optional
@@ -7,7 +8,12 @@ import attr
 from pydantic import BaseModel, Extra, Field, confloat
 
 
-not_negative_float = confloat(strict=True, ge=0.0)
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias  # it's for 3.10 Python
+
+    not_negative_float: TypeAlias = confloat(strict=True, ge=0.0)  # it's for 3.10 Python
+else:
+    not_negative_float = confloat(strict=True, ge=0.0)  # it's for 3.8 Python
 
 
 def str_to_datetime(item: str) -> datetime:
@@ -16,9 +22,8 @@ def str_to_datetime(item: str) -> datetime:
 
 @unique
 class TradeStatus(str, Enum):
-    START = "start"
-    BUY = "buy"
-    SELL = "sell"
+    BUY = "BUY"
+    SELL = "SELL"
 
 
 @attr.s
@@ -66,11 +71,10 @@ class SellInfo(BaseModel, extra=Extra.forbid):
     time: str
     price: not_negative_float
     stop_loss_reason: bool = Field(alias="stopLossReason")
+    profit: float
 
 
 class History(BaseModel, extra=Extra.forbid):
-    # buy: List[not_negative_float]
-    # sell: List[not_negative_float]
     buy: List[Optional[ByInfo]]
     sell: List[Optional[SellInfo]]
 
@@ -85,12 +89,10 @@ class CoinInfo(BaseModel):
     balanse: float
     buy_price: not_negative_float = Field(alias="buyPrice")
     buy_time: str = Field(alias="buyTime")
-    # buy_time: datetime = Field(alias="buyTime")
     current_price: not_negative_float = Field(alias="currentPrice")
     desired_sell_price: not_negative_float = Field(alias="desiredPriceFall")
     history: History
     sell_price: not_negative_float = Field(alias="sellPrice")
     sell_time: str = Field(alias="sellTime")
-    # sell_time: datetime = Field(alias="sellTime")
     status: Status
     stop_loss_price: not_negative_float = Field(alias="stopLossPrice")

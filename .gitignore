@@ -5,6 +5,7 @@ __pycache__/
 */__pycache__/
 .pytest_cache/
 */.pytest_cache/
+.mypy_cache/
 
 
 ## files
@@ -15,7 +16,9 @@ __pycache__/
 storage.json
 storage copy.json
 test.json
+test.txt
 test copy.json
+test_trade_answer*
 history.json
 my.db
 *.log.zip

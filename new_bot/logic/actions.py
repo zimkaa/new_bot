@@ -144,6 +144,7 @@ def update_storage(
                 my_coins[coin_name]["stopLossPrice"] = 0.0
                 my_coins[coin_name]["balanse"] += possible_profit
                 history_dict["stopLossReason"] = stop_loss_reason
+                history_dict["profit"] = possible_profit
             # my_coins[coin_name]['currentPrice'] = coin_price
             my_coins[coin_name]["history"][type_operation].append(history_dict)
             my_coins[coin_name]["amount"] = amount

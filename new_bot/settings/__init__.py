@@ -5,6 +5,7 @@ from .main_settings import PERCENTAGE_DOWN_TO
 from .main_settings import PERCENTAGE_RISE_UP_TO
 from .main_settings import PERCENTAGE_STOP_LOSS
 from .main_settings import PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE
+from .main_settings import PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY
 from .main_settings import PERCENTAGE_WAIT_AFTER_SELL
 from .main_settings import PERCENTAGE_WAIT_FOR_BUY
 from .main_settings import ROUNDING
@@ -18,3 +19,4 @@ from .const import COEFFICIENT_RISE_UP_TO
 from .const import COEFFICIENT_WAIT_AFTER_SELL
 from .const import COEFFICIENT_WAIT_FOR_BUY
 from .const import TRIGGER_PRICE_FALL_PER_MINUTE
+from .const import TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY
