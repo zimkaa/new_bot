@@ -75,8 +75,8 @@ class SellInfo(BaseModel, extra=Extra.forbid):
 
 
 class History(BaseModel, extra=Extra.forbid):
-    buy: List[Optional[ByInfo]]
-    sell: List[Optional[SellInfo]]
+    BUY: List[Optional[ByInfo]]
+    SELL: List[Optional[SellInfo]]
 
 
 class Status(BaseModel, extra=Extra.forbid):

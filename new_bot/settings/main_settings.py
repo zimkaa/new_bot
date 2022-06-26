@@ -16,6 +16,8 @@ KEY = os.getenv("BINANCE_KEY")
 # SECRET = os.getenv("SECRET")
 SECRET = os.getenv("BINANCE_SECRET")
 
+TRADE = os.getenv("TRADE")
+
 TIME_FORMAT = os.getenv("TIME_FORMAT", "%Y-%m-%d %H:%M:%S")
 
 PERCENTAGE_RISE_UP_TO = Decimal(os.getenv("PERCENTAGE_RISE_UP_TO", 0.5))

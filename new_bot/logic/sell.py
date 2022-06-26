@@ -3,6 +3,8 @@ from typing import List, Tuple
 
 from loguru import logger
 
+from connection import trade_market
+
 from schemas import Kline, TradeStatus
 
 from settings import (
@@ -11,6 +13,7 @@ from settings import (
     COEFFICIENT_RISE_UP_TO,
     TIME_FORMAT,
     TRIGGER_PRICE_FALL_PER_MINUTE,
+    ONLINE_TRADE,
 )
 
 from .actions import (
@@ -149,6 +152,11 @@ def to_sell(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, b
             logger.debug("Update_storage action in check_fall")
         else:
             logger.warning("Trouble with update_storage")
+
+        if ONLINE_TRADE:
+            if coin_name == "BTC":
+                trade_market(coin_name, type_operation, amount)
+
         text = f"Need to sell {coin_name} time_open {time_sell}"
         logger.error(text)
         message += text
@@ -167,6 +175,11 @@ def to_sell(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, b
                 logger.debug("Update_storage action in check_fall")
             else:
                 logger.warning("Trouble with update_storage")
+
+            if ONLINE_TRADE:
+                if coin_name == "BTC":
+                    trade_market(coin_name, type_operation, amount)
+
             text = f"Need to sell {coin_name} time_open {time_sell}"
             logger.error(text)
             message += text

@@ -96,7 +96,7 @@ def update_storage(
     coin_price: float,
     amount: float,
     status_buy: bool,
-    type_operation: str,
+    type_operation: TradeStatus,
     time: str,
     user_settings: Optional[dict] = None,
     stop_loss_reason: bool = False,

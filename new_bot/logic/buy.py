@@ -4,6 +4,8 @@ from typing import List, Tuple
 
 from loguru import logger
 
+from connection import trade_market
+
 from schemas import Kline, TradeStatus
 
 from settings import (
@@ -11,6 +13,7 @@ from settings import (
     COEFFICIENT_WAIT_FOR_BUY,
     TIME_FORMAT,
     TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY,
+    ONLINE_TRADE,
 )
 
 from .actions import (
@@ -105,6 +108,11 @@ def buy(list_klines: List[Kline], coin_name: str, user_settings: dict):
         logger.debug("Update_storage action in buy")
     else:
         logger.debug("Trouble with update_storage")
+
+    if ONLINE_TRADE:
+        if coin_name == "BTC":
+            trade_market(coin_name, type_operation, amount)
+
     write_state(coin_name, False)
 
 

@@ -7,8 +7,8 @@
     "currentPrice": 0.0,
     "desiredPriceFall": 0.4,
     "history": {
-      "buy": [],
-      "sell": []
+      "BUY": [],
+      "SELL": []
     },
     "sellPrice": 0.0,
     "sellTime": "1999-06-11 11:11:11",
@@ -25,8 +25,8 @@
     "currentPrice": 0.0,
     "desiredPriceFall": 1.0,
     "history": {
-      "buy": [],
-      "sell": []
+      "BUY": [],
+      "SELL": []
     },
     "sellPrice": 0.0,
     "sellTime": "1999-06-11 11:11:11",
