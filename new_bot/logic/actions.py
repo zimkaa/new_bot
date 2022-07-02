@@ -61,10 +61,14 @@ def read_store_sell_time(coin_name: str) -> str:
     return my_coins[coin_name]["sellTime"]
 
 
-def write_state(coin_name: str, data: int):
+def write_state(coin_name: str, data: bool, fall: Decimal):
     with open("state.json", "r+", encoding="utf8") as my_coins_data:
         my_state = json.loads(my_coins_data.read())
         my_state[coin_name]["checkTime"] = data
+        if data:
+            my_state[coin_name]["fall"] = fall
+        else:
+            my_state[coin_name]["fall"] = 0.0
         my_coins_data.seek(0)
         my_coins_data.write(json.dumps(my_state, sort_keys=True, indent=2))
         my_coins_data.truncate()
@@ -166,6 +170,13 @@ def update_storage(
 
 
 def search_changes(item: Kline) -> Decimal:
+    """Сalculates changes
+
+    :param item: one Kline
+    :type item: Kline
+    :return: calculated change
+    :rtype: Decimal
+    """
     change = 1 - item.open_price / item.close_price
     return Decimal(change)
 

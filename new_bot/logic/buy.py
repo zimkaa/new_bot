@@ -11,9 +11,9 @@ from schemas import Kline, TradeStatus
 from settings import (
     COEFFICIENT_WAIT_AFTER_SELL,
     COEFFICIENT_WAIT_FOR_BUY,
+    ONLINE_TRADE,
     TIME_FORMAT,
     TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY,
-    ONLINE_TRADE,
 )
 
 from .actions import (
@@ -58,12 +58,24 @@ def check_change(list_klines: List[Kline], coin_name: str) -> bool:
 
 
 def check_old_kline(list_klines: List[Kline], offset: int, change: Decimal) -> bool:
+    """Check old kline for growing up to COEFFICIENT_WAIT_FOR_BUY
+
+    :param list_klines: all Klines
+    :type list_klines: List[Kline]
+    :param offset: start Klline to check
+    :type offset: int
+    :param change: change before
+    :type change: Decimal
+    :return: Result of this conditions
+    :rtype: bool
+    """
     new_offset = offset - 1
     rounded_change = rounding_to_decimal(change)
     all_change = rounded_change
-    for element in list_klines[new_offset::-1]:
-        new_change = search_changes(element)
-        rounded_new_change = rounding_to_decimal(new_change)
+    for kline in list_klines[new_offset::-1]:
+        # new_change = search_changes(element)
+        # rounded_new_change = rounding_to_decimal(new_change)
+        rounded_new_change = get_rounded_change(kline)
         all_change += rounded_new_change
         if all_change >= COEFFICIENT_WAIT_FOR_BUY:
             logger.info("Old kline is grow up to triger")
@@ -79,9 +91,8 @@ def check_next_kline(list_klines: List[Kline]) -> bool:
     logger.info("Check_next_kline")
     offset = -2
     item = list_klines[offset]
-    change = Decimal(1 - item.open_price / item.close_price)
-    # условие при котором проверяется сумарный рост предыдущих свечей
-    # предыдущими свечками к примеру по 0.0001 рост может достич желаемого 0.001
+    # change = Decimal(1 - item.open_price / item.close_price)
+    change = get_rounded_change(item)
     if change >= COEFFICIENT_WAIT_FOR_BUY:
         logger.info(f"{list_klines[offset].close_price=}")
         return True
@@ -113,7 +124,40 @@ def buy(list_klines: List[Kline], coin_name: str, user_settings: dict):
         if coin_name == "BTC":
             trade_market(coin_name, type_operation, amount)
 
-    write_state(coin_name, False)
+    write_state(coin_name, False, Decimal(0))
+
+
+def get_rounded_change(item: Kline) -> Decimal:
+    """Calculate changes and round it
+
+    :param item: one Kline
+    :type item: Kline
+    :return: rounded change
+    :rtype: Decimal
+    """
+    change = search_changes(item)
+    return rounding_to_decimal(change)
+
+
+def check_all_falling(list_klines: List[Kline]) -> Decimal:
+    """Calculating falling in percent with rounding
+
+    :param list_klines: _description_
+    :type list_klines: List[Kline]
+    :return: _description_
+    :rtype: Decimal
+    """
+    offset = -2
+    new_offset = offset - 1
+    rounded_change = get_rounded_change(list_klines[offset])
+    all_change = rounded_change
+    for kline in list_klines[new_offset::-1]:
+        rounded_new_change = get_rounded_change(kline)
+        if rounded_new_change >= 0:
+            break
+        all_change += rounded_new_change
+    logger.warning(f"All falling {all_change}")
+    return all_change
 
 
 def to_buy(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, bool]:
@@ -128,11 +172,18 @@ def to_buy(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, bo
             logger.error(text)
             buy(list_klines, coin_name, user_settings)
         else:
+            # offset = -2
+            # change = 1 - list_klines[offset].open_price / list_klines[offset].close_price
+            # change_persent = rounding_to_decimal(change)
+            # write_state(coin_name, True, change_persent)
+            change_persent = check_all_falling(list_klines)
+            write_state(coin_name, True, change_persent)
             text = f"Need to check next kline {coin_name}"
             logger.info(text)
     else:
         if check_change(list_klines, coin_name):
-            write_state(coin_name, True)
+            change_persent = check_all_falling(list_klines)
+            write_state(coin_name, True, change_persent)
             text = f"Check_change {coin_name}"
             logger.info(text)
         else:
