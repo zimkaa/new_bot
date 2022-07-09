@@ -1,8 +1,10 @@
 {
   "BTC": {
-    "checkTime": false
+    "checkTime": false,
+    "fall": 0.0
   },
   "NEAR": {
-    "checkTime": false
+    "checkTime": false,
+    "fall": 0.0
   }
 }

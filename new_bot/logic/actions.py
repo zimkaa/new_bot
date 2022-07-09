@@ -8,7 +8,7 @@ from connection import client
 
 from schemas import CoinInfo, Kline, TradeStatus, ValidationError
 
-from settings import COEFFICIENT_FOR_PROFIT, ROUNDING
+from settings import COEFFICIENT_FOR_PROFIT, ROUNDING, STOP_LOSS_RATIO
 
 
 def get_klines_for_period(coin_name: str, *, interval: str = "1m", limit: int = 240) -> List[Kline]:
@@ -61,12 +61,12 @@ def read_store_sell_time(coin_name: str) -> str:
     return my_coins[coin_name]["sellTime"]
 
 
-def write_state(coin_name: str, data: bool, fall: Decimal):
+def write_state(coin_name: str, data: bool, fall: Decimal = None):
     with open("state.json", "r+", encoding="utf8") as my_coins_data:
         my_state = json.loads(my_coins_data.read())
         my_state[coin_name]["checkTime"] = data
-        if data:
-            my_state[coin_name]["fall"] = fall
+        if data and fall:
+            my_state[coin_name]["fall"] = float(fall)
         else:
             my_state[coin_name]["fall"] = 0.0
         my_coins_data.seek(0)
@@ -132,10 +132,11 @@ def update_storage(
                 my_coins[coin_name]["buyPrice"] = coin_price
                 my_coins[coin_name]["buyTime"] = time
                 my_coins[coin_name]["sellPrice"] = 0.0
-                if user_settings:
-                    stop_loss_price = coin_price * user_settings["stop_loss_ratio"]
-                else:
-                    logger.warning("Trouble wuth writing stop_loss_ratio")
+                stop_loss_price = coin_price * float(STOP_LOSS_RATIO)
+                # if user_settings:
+                #     stop_loss_price = coin_price * user_settings["stop_loss_ratio"]
+                # else:
+                #     logger.warning("Trouble wuth writing stop_loss_ratio")
                 my_coins[coin_name]["stopLossPrice"] = stop_loss_price
                 # logger.info(f"Write buyPrice = {coin_price}")
                 # logger.info(f"Write stop_loss_price = {stop_loss_price}")
@@ -254,6 +255,7 @@ def set_order_with_stop_loss(
         return False
 
 
+# Not used yet
 def get_stop_loss_price(price: float, stop_loss_ratio: float) -> float:
     """Create stop loss order
 

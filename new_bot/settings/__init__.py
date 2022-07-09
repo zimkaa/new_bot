@@ -21,3 +21,4 @@ from .const import COEFFICIENT_WAIT_FOR_BUY
 from .const import TRIGGER_PRICE_FALL_PER_MINUTE
 from .const import TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY
 from .const import ONLINE_TRADE
+from .const import STOP_LOSS_RATIO

@@ -22,7 +22,7 @@ TIME_FORMAT = os.getenv("TIME_FORMAT", "%Y-%m-%d %H:%M:%S")
 
 PERCENTAGE_RISE_UP_TO = Decimal(os.getenv("PERCENTAGE_RISE_UP_TO", 0.5))
 
-PERCENTAGE_DOWN_TO = Decimal(os.getenv("PERCENTAGE_DOWN_TO", 0.2))
+PERCENTAGE_DOWN_TO = Decimal(os.getenv("PERCENTAGE_DOWN_TO", 0.3))
 
 PERCENTAGE_STOP_LOSS = Decimal(os.getenv("PERCENTAGE_STOP_LOSS", 1))
 

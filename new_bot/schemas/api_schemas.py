@@ -27,6 +27,11 @@ class TradeStatus(str, Enum):
 
 
 @attr.s
+class Coin:
+    amount: float = attr.ib(converter=float)
+
+
+@attr.s
 class Kline:
     time_open: datetime = attr.ib(converter=str_to_datetime)
     open_price: float = attr.ib(converter=float)
