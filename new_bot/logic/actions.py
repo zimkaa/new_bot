@@ -61,7 +61,7 @@ def read_store_sell_time(coin_name: str) -> str:
     return my_coins[coin_name]["sellTime"]
 
 
-def write_state(coin_name: str, data: bool, fall: Decimal = None):
+def write_state(coin_name: str, data: bool, fall: Optional[Decimal] = None):
     with open("state.json", "r+", encoding="utf8") as my_coins_data:
         my_state = json.loads(my_coins_data.read())
         my_state[coin_name]["checkTime"] = data
@@ -168,6 +168,18 @@ def update_storage(
     except Exception as err:
         logger.debug(f"ERROR WITH update_storage {err=}")
         return False
+
+
+def get_rounded_change(item: Kline) -> Decimal:
+    """Calculate changes and round it
+
+    :param item: one Kline
+    :type item: Kline
+    :return: rounded change
+    :rtype: Decimal
+    """
+    change = search_changes(item)
+    return rounding_to_decimal(change)
 
 
 def search_changes(item: Kline) -> Decimal:

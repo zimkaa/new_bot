@@ -6,7 +6,13 @@ from schemas import TradeStatus
 
 from .buy import to_buy
 
+from .buy2 import Buy
+
 from .sell import to_sell
+
+from .sell2 import Sell
+
+from .actions import get_klines_for_period
 
 
 # def get_price(coin_name: str) -> float:
@@ -42,6 +48,9 @@ def choose_an_action(status: bool) -> str:
 ACTION = {"BUY": to_buy, "SELL": to_sell}
 
 
+ACTION2 = {"BUY": Buy, "SELL": Sell}
+
+
 def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -> tuple:
     final_message = []
     send = False
@@ -55,6 +64,35 @@ def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -
 
         # message, send, update = ACTION[action_type](coin, coin_price, coin_name, send, update, user_settings)
         message, send = ACTION[action_type](user_settings, coin_name, my_state)
+        # list_klines = get_klines_for_period(coin_name, limit=60)
+
+        final_message.append(message)
+        logger.debug(f"{message}")
+
+    return (send, final_message)
+
+
+def action_with_each_coin2(my_coins: dict, user_settings: dict, my_state: dict) -> tuple:
+    final_message = []
+    send = False
+    # update = False
+
+    for coin_name in my_coins.keys():
+        coin = my_coins[coin_name]
+        # coin_price = get_price(coin_name)
+
+        action_type = choose_an_action(coin["status"]["buy"])
+
+        # message, send, update = ACTION[action_type](coin, coin_price, coin_name, send, update, user_settings)
+
+        list_klines = get_klines_for_period(coin_name, limit=60)
+        action = ACTION2[action_type](user_settings, coin_name, my_state, list_klines)
+
+        action.start()
+
+        send = action.need_send_message()
+
+        message = action.get_message_text()
 
         final_message.append(message)
         logger.debug(f"{message}")

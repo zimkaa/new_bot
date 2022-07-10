@@ -10,7 +10,7 @@ from telegram import Update
 
 from telegram.ext import CallbackContext, CommandHandler, Updater
 
-from logic import action_with_each_coin
+from logic import action_with_each_coin, action_with_each_coin2, get_klines_for_period, Buy, Sell
 
 from schemas import Ratios, Settings, ValidationError
 
@@ -171,6 +171,113 @@ def main() -> None:
     # SIGABRT. This should be used most of the time, since start_polling() is
     # non-blocking and will stop the bot gracefully.
     updater.idle()
+
+
+def buy_test():
+    user_settings = read_settings("settings.json")
+
+    # START WHILE
+    logger.info("while True")
+    try:
+        while True:
+            coin_name = "BTC"
+
+            with open("state.json", "r", encoding="utf8") as my_coins_data:
+                my_state = json.loads(my_coins_data.read())
+
+            list_klines = get_klines_for_period(coin_name, limit=60)
+
+            my_buy = Buy(user_settings, coin_name, my_state, list_klines)
+
+            my_buy.start()
+
+            send = my_buy.need_send_message()
+
+            if send:
+                # job = context.job
+                final_message = my_buy.get_message_text()
+                # text = "\n".join(final_message)
+                # context.bot.send_message(job.context, text=text)
+                # logger.error(text)
+                logger.error(final_message)
+
+            logger.info("END Iteration")
+            time.sleep(60)
+
+    except KeyboardInterrupt:
+        logger.info("Stopped by user")
+
+
+def sell_test():
+    user_settings = read_settings("settings.json")
+
+    # START WHILE
+    logger.info("while True")
+    try:
+        while True:
+            coin_name = "BTC"
+
+            with open("state.json", "r", encoding="utf8") as my_coins_data:
+                my_state = json.loads(my_coins_data.read())
+
+            list_klines = get_klines_for_period(coin_name, limit=60)
+
+            my_sell = Sell(user_settings, coin_name, my_state, list_klines)
+
+            my_sell.start()
+
+            send = my_sell.need_send_message()
+
+            if send:
+                # job = context.job
+                final_message = my_sell.get_message_text()
+                # text = "\n".join(final_message)
+                # context.bot.send_message(job.context, text=text)
+                # logger.error(text)
+                logger.error(final_message)
+
+            logger.info("END Iteration")
+            time.sleep(60)
+
+    except KeyboardInterrupt:
+        logger.info("Stopped by user")
+
+
+def all_test():
+    user_settings = read_settings("settings.json")
+
+    # START WHILE
+    logger.info("while True")
+    try:
+        while True:
+            logger.info("Iteration")
+            with open("storage.json", "r", encoding="utf8") as my_coins_data:
+                my_coins = json.loads(my_coins_data.read())
+
+            with open("state.json", "r", encoding="utf8") as my_coins_data:
+                my_state = json.loads(my_coins_data.read())
+
+            send, final_message = action_with_each_coin2(my_coins, user_settings, my_state)
+
+            if send:
+                # job = context.job
+                # final_message = my_sell.get_message_text()
+                text = "\n".join(final_message)
+                # context.bot.send_message(job.context, text=text)
+                logger.error(text)
+                # logger.error(final_message)
+
+            logger.info("END Iteration")
+            time.sleep(60)
+
+    except KeyboardInterrupt:
+        logger.info("Stopped by user")
+
+
+# if __name__ == "__main__":
+#     # buy_test()
+#     # sell_test()
+#     all_test()
 
 
 if __name__ == "__main__":
