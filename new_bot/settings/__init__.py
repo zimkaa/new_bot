@@ -12,6 +12,7 @@ from .main_settings import ROUNDING
 from .main_settings import SECRET
 from .main_settings import TOKEN
 from .main_settings import TIME_FORMAT
+from .main_settings import TEST
 
 from .const import COEFFICIENT_DOWN_TO
 from .const import COEFFICIENT_FOR_PROFIT

@@ -14,7 +14,7 @@ from logic import action_with_each_coin, action_with_each_coin2, get_klines_for_
 
 from schemas import Ratios, Settings, ValidationError
 
-from settings import TOKEN
+from settings import TOKEN, TEST
 
 
 # Enable logging
@@ -182,7 +182,10 @@ def buy_test():
         while True:
             coin_name = "BTC"
 
-            with open("state.json", "r", encoding="utf8") as my_coins_data:
+            file_name = "state.json"
+            if TEST:
+                file_name = "state_test.json"
+            with open(file_name, "r", encoding="utf8") as my_coins_data:
                 my_state = json.loads(my_coins_data.read())
 
             list_klines = get_klines_for_period(coin_name, limit=60)
@@ -217,7 +220,10 @@ def sell_test():
         while True:
             coin_name = "BTC"
 
-            with open("state.json", "r", encoding="utf8") as my_coins_data:
+            file_name = "state.json"
+            if TEST:
+                file_name = "state_test.json"
+            with open(file_name, "r", encoding="utf8") as my_coins_data:
                 my_state = json.loads(my_coins_data.read())
 
             list_klines = get_klines_for_period(coin_name, limit=60)
@@ -251,10 +257,17 @@ def all_test():
     try:
         while True:
             logger.info("Iteration")
-            with open("storage.json", "r", encoding="utf8") as my_coins_data:
+
+            file_name = "storage_test.json"
+            if TEST:
+                file_name = "storage_test.json"
+            with open(file_name, "r", encoding="utf8") as my_coins_data:
                 my_coins = json.loads(my_coins_data.read())
 
-            with open("state.json", "r", encoding="utf8") as my_coins_data:
+            file_name = "state_test.json"
+            if TEST:
+                file_name = "state_test.json"
+            with open(file_name, "r", encoding="utf8") as my_coins_data:
                 my_state = json.loads(my_coins_data.read())
 
             send, final_message = action_with_each_coin2(my_coins, user_settings, my_state)
@@ -274,36 +287,42 @@ def all_test():
         logger.info("Stopped by user")
 
 
-# if __name__ == "__main__":
-#     # buy_test()
-#     # sell_test()
-#     all_test()
-
-
 if __name__ == "__main__":
+    # buy_test()
+    # sell_test()
+    all_test()
 
-    user_settings = read_settings("settings.json")
 
-    # START WHILE
-    logger.info("while True")
-    try:
-        while True:
-            logger.info("Iteration")
-            with open("storage.json", "r", encoding="utf8") as my_coins_data:
-                my_coins = json.loads(my_coins_data.read())
+# if __name__ == "__main__":
 
-            with open("state.json", "r", encoding="utf8") as my_coins_data:
-                my_state = json.loads(my_coins_data.read())
+#     user_settings = read_settings("settings.json")
 
-            send, final_message = action_with_each_coin(my_coins, user_settings, my_state)
+#     # START WHILE
+#     logger.info("while True")
+#     try:
+#         while True:
+#             logger.info("Iteration")
+#             file_name = "storage.json"
+#             if TEST:
+#                 file_name = "storage_test.json"
+#             with open(file_name, "r", encoding="utf8") as my_coins_data:
+#                 my_coins = json.loads(my_coins_data.read())
 
-            if send:
-                # job = context.job
-                text = "\n".join(final_message)
-                # context.bot.send_message(job.context, text=text)
-                logger.error(text)
+#             file_name = "state.json"
+#             if TEST:
+#                 file_name = "state_test.json"
+#             with open(file_name, "r", encoding="utf8") as my_coins_data:
+#                 my_state = json.loads(my_coins_data.read())
 
-            logger.info("END Iteration")
-            time.sleep(60)
-    except KeyboardInterrupt:
-        logger.info("Stopped by user")
+#             send, final_message = action_with_each_coin(my_coins, user_settings, my_state)
+
+#             if send:
+#                 # job = context.job
+#                 text = "\n".join(final_message)
+#                 # context.bot.send_message(job.context, text=text)
+#                 logger.error(text)
+
+#             logger.info("END Iteration")
+#             time.sleep(60)
+#     except KeyboardInterrupt:
+#         logger.info("Stopped by user")

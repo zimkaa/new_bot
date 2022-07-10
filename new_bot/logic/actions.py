@@ -8,7 +8,7 @@ from connection import client
 
 from schemas import CoinInfo, Kline, TradeStatus, ValidationError
 
-from settings import COEFFICIENT_FOR_PROFIT, ROUNDING, STOP_LOSS_RATIO
+from settings import COEFFICIENT_FOR_PROFIT, ROUNDING, STOP_LOSS_RATIO, TEST
 
 
 def get_klines_for_period(coin_name: str, *, interval: str = "1m", limit: int = 240) -> List[Kline]:
@@ -32,37 +32,55 @@ def get_klines_for_period(coin_name: str, *, interval: str = "1m", limit: int = 
 
 
 def reed_store(coin_name: str) -> dict:
-    with open("storage.json", "r", encoding="utf8") as my_coins_data:
+    file_name = "storage.json"
+    if TEST:
+        file_name = "storage_test.json"
+    with open(file_name, "r", encoding="utf8") as my_coins_data:
         my_coins = json.loads(my_coins_data.read())
     return my_coins[coin_name]
 
 
 def read_store_buy_price(coin_name: str) -> Decimal:
-    with open("storage.json", "r", encoding="utf8") as my_coins_data:
+    file_name = "storage.json"
+    if TEST:
+        file_name = "storage_test.json"
+    with open(file_name, "r", encoding="utf8") as my_coins_data:
         my_coins = json.loads(my_coins_data.read())
     return Decimal(my_coins[coin_name]["buyPrice"])
 
 
 def read_store_sell_price(coin_name: str) -> Decimal:
-    with open("storage.json", "r", encoding="utf8") as my_coins_data:
+    file_name = "storage.json"
+    if TEST:
+        file_name = "storage_test.json"
+    with open(file_name, "r", encoding="utf8") as my_coins_data:
         my_coins = json.loads(my_coins_data.read())
     return Decimal(my_coins[coin_name]["sellPrice"])
 
 
 def read_store_stop_loss_price(coin_name: str) -> Decimal:
-    with open("storage.json", "r", encoding="utf8") as my_coins_data:
+    file_name = "storage.json"
+    if TEST:
+        file_name = "storage_test.json"
+    with open(file_name, "r", encoding="utf8") as my_coins_data:
         my_coins = json.loads(my_coins_data.read())
     return Decimal(my_coins[coin_name]["stopLossPrice"])
 
 
 def read_store_sell_time(coin_name: str) -> str:
-    with open("storage.json", "r", encoding="utf8") as my_coins_data:
+    file_name = "storage.json"
+    if TEST:
+        file_name = "storage_test.json"
+    with open(file_name, "r", encoding="utf8") as my_coins_data:
         my_coins = json.loads(my_coins_data.read())
     return my_coins[coin_name]["sellTime"]
 
 
 def write_state(coin_name: str, data: bool, fall: Optional[Decimal] = None):
-    with open("state.json", "r+", encoding="utf8") as my_coins_data:
+    file_name = "state.json"
+    if TEST:
+        file_name = "state_test.json"
+    with open(file_name, "r+", encoding="utf8") as my_coins_data:
         my_state = json.loads(my_coins_data.read())
         my_state[coin_name]["checkTime"] = data
         if data and fall:
@@ -124,7 +142,10 @@ def update_storage(
     :rtype: bool
     """
     try:
-        with open("storage.json", "r+", encoding="utf8") as my_coins_data:
+        file_name = "storage.json"
+        if TEST:
+            file_name = "storage_test.json"
+        with open(file_name, "r+", encoding="utf8") as my_coins_data:
             my_coins = json.loads(my_coins_data.read())
             history_dict = {"time": time, "price": coin_price}
             # if type_operation == TradeStatus.BUY.value:
@@ -209,7 +230,10 @@ def rounding_to_float(some_value: Decimal) -> float:
 
 def update_stop_loss_price(coin_name: str, stop_loss_price: float) -> bool:
     try:
-        with open("storage.json", "r+", encoding="utf8") as my_coins_data:
+        file_name = "storage.json"
+        if TEST:
+            file_name = "storage_test.json"
+        with open(file_name, "r+", encoding="utf8") as my_coins_data:
             my_coins = json.loads(my_coins_data.read())
             my_coins[coin_name]["stopLossPrice"] = stop_loss_price
             try:

@@ -16,7 +16,11 @@ KEY = os.getenv("BINANCE_KEY")
 # SECRET = os.getenv("SECRET")
 SECRET = os.getenv("BINANCE_SECRET")
 
-TRADE = os.getenv("TRADE")
+TRADE = os.getenv("TRADE", "ON")
+# TRADE = os.getenv("TRADE", "OFF")
+
+TEST = True
+# TEST = False
 
 TIME_FORMAT = os.getenv("TIME_FORMAT", "%Y-%m-%d %H:%M:%S")
 

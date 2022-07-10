@@ -25,3 +25,7 @@ my.db
 
 # dotenv
 .env
+
+# test file
+state_test.json
+storage_test.json

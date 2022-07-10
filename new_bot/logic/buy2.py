@@ -7,7 +7,7 @@ from loguru import logger
 
 from connection import trade_market
 
-from schemas import Kline, TradeStatus, Ratios, Settings, ValidationError
+from schemas import Action, Kline, TradeStatus, Ratios, Settings, ValidationError
 
 from settings import (
     COEFFICIENT_WAIT_AFTER_SELL,
@@ -29,26 +29,26 @@ from .actions import (
 )
 
 
-class Buy:
-    def __init__(self, user_settings: dict, coin_name: str, my_state: dict, list_klines: List[Kline]) -> None:
-        """
-        :param user_settings: settings to write
-        :type user_settings: dict
-        :param coin_name: coin name (tiker)
-        :type coin_name: str
-        :param my_state: statement dictionary
-        :type my_state: dict
-        :param list_klines: all Klines
-        :type list_klines: List[Kline]
-        """
-        self.user_settings = user_settings
-        self.coin_name = coin_name
-        self.my_state = my_state
-        self.list_klines = list_klines
-        self.send = True
-        self.message = ""
+class Buy(Action):
+    # def __init__(self, user_settings: dict, coin_name: str, my_state: dict, list_klines: List[Kline]) -> None:
+    #     """
+    #     :param user_settings: settings to write
+    #     :type user_settings: dict
+    #     :param coin_name: coin name (tiker)
+    #     :type coin_name: str
+    #     :param my_state: statement dictionary
+    #     :type my_state: dict
+    #     :param list_klines: all Klines
+    #     :type list_klines: List[Kline]
+    #     """
+    #     self.user_settings = user_settings
+    #     self.coin_name = coin_name
+    #     self.my_state = my_state
+    #     self.list_klines = list_klines
+    #     self.send = True
+    #     self.message = ""
 
-    def start(self):
+    def start(self) -> None:
         if self.my_state[self.coin_name]["checkTime"]:
             if self._check_next_kline():
                 text = f"Need to buy {self.coin_name}"
@@ -83,7 +83,8 @@ class Buy:
         sell_time_srt = read_store_sell_time(self.coin_name)
         sell_time = datetime.strptime(sell_time_srt, TIME_FORMAT)
         difference = time_now - sell_time
-        difference_in_hours = timedelta(hours=1)
+        # difference_in_hours = timedelta(hours=1)
+        difference_in_hours = timedelta(minutes=20)
         if difference > difference_in_hours:
             logger.info("Ignore sell_price because passed more than 1 hour")
             sell_price = Decimal(1000000000)
@@ -197,8 +198,8 @@ class Buy:
                 break
         return False
 
-    def need_send_message(self) -> bool:
-        return self.send
+    # def need_send_message(self) -> bool:
+    #     return self.send
 
-    def get_message_text(self) -> str:
-        return self.message
+    # def get_message_text(self) -> str:
+    #     return self.message

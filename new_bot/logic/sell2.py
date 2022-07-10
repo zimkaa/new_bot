@@ -5,7 +5,7 @@ from loguru import logger
 
 from connection import trade_market
 
-from schemas import Kline, TradeStatus
+from schemas import Action, Kline, TradeStatus
 
 from settings import (
     COEFFICIENT_DOWN_TO,
@@ -23,26 +23,26 @@ from .actions import (
 )
 
 
-class Sell:
-    def __init__(self, user_settings: dict, coin_name: str, my_state: dict, list_klines: List[Kline]) -> None:
-        """
-        :param user_settings: settings to write
-        :type user_settings: dict
-        :param coin_name: coin name (tiker)
-        :type coin_name: str
-        :param my_state: statement dictionary
-        :type my_state: dict
-        :param list_klines: all Klines
-        :type list_klines: List[Kline]
-        """
-        self.user_settings = user_settings
-        self.coin_name = coin_name
-        self.my_state = my_state
-        self.list_klines = list_klines
-        self.send = True
-        self.message = ""
+class Sell(Action):
+    # def __init__(self, user_settings: dict, coin_name: str, my_state: dict, list_klines: List[Kline]) -> None:
+    #     """
+    #     :param user_settings: settings to write
+    #     :type user_settings: dict
+    #     :param coin_name: coin name (tiker)
+    #     :type coin_name: str
+    #     :param my_state: statement dictionary
+    #     :type my_state: dict
+    #     :param list_klines: all Klines
+    #     :type list_klines: List[Kline]
+    #     """
+    #     self.user_settings = user_settings
+    #     self.coin_name = coin_name
+    #     self.my_state = my_state
+    #     self.list_klines = list_klines
+    #     self.send = True
+    #     self.message = ""
 
-    def start(self):
+    def start(self) -> None:
         if self._check_stop_loss():
             stop_loss_reason = True
             coin_price = self.list_klines[-1].close_price
@@ -132,8 +132,8 @@ class Sell:
             return True
         return False
 
-    def need_send_message(self) -> bool:
-        return self.send
+    # def need_send_message(self) -> bool:
+    #     return self.send
 
-    def get_message_text(self) -> str:
-        return self.message
+    # def get_message_text(self) -> str:
+    #     return self.message

@@ -6,3 +6,5 @@ from .api_schemas import TradeStatus
 from .api_schemas import Kline
 from .api_schemas import Settings
 from .api_schemas import Ratios
+
+from .my_classes import Action

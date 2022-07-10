@@ -7,6 +7,7 @@ from .main_settings import PERCENTAGE_WAIT_AFTER_SELL
 from .main_settings import PERCENTAGE_WAIT_FOR_BUY
 from .main_settings import TRADE
 from .main_settings import PERCENTAGE_STOP_LOSS
+from .main_settings import TEST
 
 
 COEFFICIENT_RISE_UP_TO = 1 + PERCENTAGE_RISE_UP_TO / 100
@@ -30,4 +31,7 @@ trade_list = ["ON", "On", "on", "True", "true", "YES", "Yes", "yes"]
 if TRADE in trade_list:
     ONLINE_TRADE = True
 else:
+    ONLINE_TRADE = False
+
+if TEST:
     ONLINE_TRADE = False

@@ -44,7 +44,8 @@ def check_change(list_klines: List[Kline], coin_name: str) -> bool:
     sell_time_srt = read_store_sell_time(coin_name)
     sell_time = datetime.strptime(sell_time_srt, TIME_FORMAT)
     difference = time_now - sell_time
-    difference_in_hours = timedelta(hours=1)
+    # difference_in_hours = timedelta(hours=1)
+    difference_in_hours = timedelta(minutes=20)
     if difference > difference_in_hours:
         logger.info("Ignore sell_price because passed more than 1 hour")
         sell_price = Decimal(1000000000)
