@@ -15,6 +15,7 @@ from settings import (
     ONLINE_TRADE,
     TIME_FORMAT,
     TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY,
+    TRIGGER_PRICE_FALL_PER_PERIOD_FOR_BUY,
 )
 
 from .actions import (
@@ -95,6 +96,26 @@ class Buy(Action):
         change_persent = get_rounded_change(self.list_klines[offset])
         first_condition = change_persent <= -TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY
         second_condition = coin_price < (sell_price * COEFFICIENT_WAIT_AFTER_SELL)
+
+        third_condition = change_persent < 0
+        if third_condition:
+            new_offset = offset - 1
+            all_change = change_persent
+            for kline in self.list_klines[new_offset::-1]:
+                rounded_new_change = get_rounded_change(kline)
+                all_change += rounded_new_change
+                if all_change <= -TRIGGER_PRICE_FALL_PER_PERIOD_FOR_BUY:
+                    logger.info(f"Kline before is falling to {rounded_new_change}")
+                    logger.warning(
+                        f"All cange {all_change} TRIGGER_PRICE_FALL_PER_PERIOD_FOR_BUY=-{TRIGGER_PRICE_FALL_PER_PERIOD_FOR_BUY} {self.coin_name}"
+                    )
+                    return True
+                # elif rounded_new_change > 0:
+                #     logger.info("Fall not enough to buy")
+                #     break
+            logger.warning(f"All cange before 60 klines {all_change}")
+        logger.warning(f"{third_condition=}")
+
         if first_condition and second_condition:
             change_before = get_rounded_change(self.list_klines[offset - 1])
             if change_before < abs(change_persent + TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY):

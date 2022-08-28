@@ -152,7 +152,7 @@ def to_sell(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, b
         stop_loss_reason = True
         coin_price = list_klines[-1].close_price
         if coin_name == "BTC":
-            amount = 0.00245
+            amount = 0.00246
         else:
             amount = 6.0
         status_buy = True
@@ -177,7 +177,7 @@ def to_sell(user_settings: dict, coin_name: str, my_state: dict) -> Tuple[str, b
         if check_fall(list_klines, coin_name):
             coin_price = list_klines[-1].close_price
             if coin_name == "BTC":
-                amount = 0.00245
+                amount = 0.00246
             else:
                 amount = 6.0
             status_buy = True

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_NAME = os.getenv("DB_NAME", "my.db")
+DB_NAME = os.getenv("DB_NAME", "files/my.db")
 
 TOKEN = os.getenv("TOKEN")
 
@@ -19,8 +19,8 @@ SECRET = os.getenv("BINANCE_SECRET")
 TRADE = os.getenv("TRADE", "ON")
 # TRADE = os.getenv("TRADE", "OFF")
 
-TEST = True
-# TEST = False
+# TEST = True
+TEST = False
 
 TIME_FORMAT = os.getenv("TIME_FORMAT", "%Y-%m-%d %H:%M:%S")
 
@@ -39,7 +39,11 @@ PERCENTAGE_COMMISSION = Decimal(os.getenv("PERCENTAGE_COMMISSION", 0.075))
 PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE = Decimal(os.getenv("PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE", 0.2))
 
 PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY = Decimal(
-    os.getenv("PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY", 0.2)
+    os.getenv("PERCENTAGE_TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY", 0.19)
+)
+
+PERCENTAGE_TRIGGER_PRICE_FALL_PER_PERIOD_FOR_BUY = Decimal(
+    os.getenv("PERCENTAGE_TRIGGER_PRICE_FALL_PER_PERIOD_FOR_BUY", 0.7)
 )
 
 ROUNDING = os.getenv("ROUNDING", ".00001")

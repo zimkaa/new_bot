@@ -15,6 +15,7 @@ __pycache__/
 *.log
 storage.json
 storage copy.json
+state.json
 test.json
 test.txt
 test copy.json

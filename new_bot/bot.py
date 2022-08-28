@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.10
+from decimal import Decimal
 import json
 import logging
 import time
@@ -9,6 +10,8 @@ from loguru import logger
 from telegram import Update
 
 from telegram.ext import CallbackContext, CommandHandler, Updater
+
+from db import create_db, connect_db, History
 
 from logic import action_with_each_coin, action_with_each_coin2, get_klines_for_period, Buy, Sell
 
@@ -258,13 +261,13 @@ def all_test():
         while True:
             logger.info("Iteration")
 
-            file_name = "storage_test.json"
+            file_name = "storage.json"
             if TEST:
                 file_name = "storage_test.json"
             with open(file_name, "r", encoding="utf8") as my_coins_data:
                 my_coins = json.loads(my_coins_data.read())
 
-            file_name = "state_test.json"
+            file_name = "state.json"
             if TEST:
                 file_name = "state_test.json"
             with open(file_name, "r", encoding="utf8") as my_coins_data:
@@ -288,9 +291,25 @@ def all_test():
 
 
 if __name__ == "__main__":
-    # buy_test()
-    # sell_test()
+    create_db()
     all_test()
+
+
+# def test_db():
+#     create_db()
+#     coin_name = "BTC"
+#     amount = Decimal(0.002)
+#     operation_type = "sell"
+#     price = Decimal(21000.54)
+#     data_base = connect_db()
+#     # data_base.add(History(coin_name=coin_name, amount=amount, operation_type=operation_type, price=price))
+#     # data_base.commit()
+#     result = data_base.query(History).filter(History.coin_name == coin_name).order_by(History.time.desc()).first()
+#     print(f"{result=}")
+
+
+# if __name__ == "__main__":
+#     test_db()
 
 
 # if __name__ == "__main__":
@@ -326,3 +345,6 @@ if __name__ == "__main__":
 #             time.sleep(60)
 #     except KeyboardInterrupt:
 #         logger.info("Stopped by user")
+#     except Exception as err:
+#         logger.error("FUCK!!!!!!!!!!!!!!!!!!!!!!!!!")
+#         logger.error(f"{err}")

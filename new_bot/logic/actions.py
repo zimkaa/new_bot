@@ -4,6 +4,8 @@ from typing import List, Optional, Union
 
 from loguru import logger
 
+from db import connect_db, History, STHistory
+
 from connection import client
 
 from schemas import CoinInfo, Kline, TradeStatus, ValidationError
@@ -184,6 +186,10 @@ def update_storage(
             my_coins_data.seek(0)
             my_coins_data.write(json.dumps(my_coins, sort_keys=True, indent=2))
             my_coins_data.truncate()
+
+        data_base = connect_db()
+        data_base.add(History(coin_name=coin_name, amount=amount, operation_type=type_operation, price=coin_price))
+        data_base.commit()
         return True
 
     except Exception as err:
@@ -244,6 +250,10 @@ def update_stop_loss_price(coin_name: str, stop_loss_price: float) -> bool:
             my_coins_data.write(json.dumps(my_coins, sort_keys=True, indent=2))
             my_coins_data.truncate()
             # logger.info(f'Set new {stop_loss_price=}')
+
+        data_base = connect_db()
+        data_base.add(STHistory(coin_name=coin_name, stop_loss_price=stop_loss_price))
+        data_base.commit()
         return True
 
     except Exception as err:

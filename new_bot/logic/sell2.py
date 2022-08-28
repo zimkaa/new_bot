@@ -47,7 +47,7 @@ class Sell(Action):
             stop_loss_reason = True
             coin_price = self.list_klines[-1].close_price
             if self.coin_name == "BTC":
-                amount = 0.00245
+                amount = 0.00246
             else:
                 amount = 6.0
             status_buy = True

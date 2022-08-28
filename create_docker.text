@@ -1,0 +1,15 @@
+docker build -t my_bot:__version__ .
+
+docker ps --all   # показать все что когда либо запускалось
+
+docker stop my_test_bot5  # стопануть контейнер
+
+docker cp 30fe174ca5ce:/opt/app/my.db /home/anton/test/  # скопировать папку из контейнера
+
+docker exec -it my_test_bot5 /bin/sh   # подключиться внутрь контейнера
+
+docker attach --detach-keys="ctrl-x" my_test_bot5   # подключиться чтобы увидеть вывод логов (STDOUT) в реальном времени для выхода биндим crt-x
+
+# задаем имя контейнеру параметр -d сразу позволит отключиться от контейнера 
+docker run -it --name my_test_bot5 -d -v /home/anton/PetProject/trading_bot/new_bot/files:/opt/app/files my_bot:0.4.2     
+
