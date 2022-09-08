@@ -1,3 +1,4 @@
+from typing import Dict, Tuple
 from loguru import logger
 
 # from connection import client
@@ -13,6 +14,8 @@ from .sell import to_sell
 from .sell2 import Sell
 
 from .actions import get_klines_for_period
+
+from schemas import Action
 
 
 # def get_price(coin_name: str) -> float:
@@ -48,10 +51,10 @@ def choose_an_action(status: bool) -> str:
 ACTION = {"BUY": to_buy, "SELL": to_sell}
 
 
-ACTION2 = {"BUY": Buy, "SELL": Sell}
+ACTION2: Dict[str, Action] = {"BUY": Buy, "SELL": Sell}
 
 
-def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -> tuple:
+def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -> Tuple[bool, list[str]]:
     final_message = []
     send = False
     # update = False
@@ -72,7 +75,7 @@ def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -
     return (send, final_message)
 
 
-def action_with_each_coin2(my_coins: dict, user_settings: dict, my_state: dict) -> tuple:
+def action_with_each_coin2(my_coins: dict, user_settings: dict, my_state: dict) -> Tuple[bool, list[str]]:
     final_message = []
     send = False
     # update = False
@@ -86,7 +89,7 @@ def action_with_each_coin2(my_coins: dict, user_settings: dict, my_state: dict) 
         # message, send, update = ACTION[action_type](coin, coin_price, coin_name, send, update, user_settings)
 
         list_klines = get_klines_for_period(coin_name, limit=60)
-        action = ACTION2[action_type](user_settings, coin_name, my_state, list_klines)
+        action: Action = ACTION2[action_type](user_settings, coin_name, my_state, list_klines)
 
         action.start()
 

@@ -19,3 +19,8 @@ def connect_db():
     engine = create_engine(f"sqlite:///{DB_NAME}")
     session = Session(bind=engine.connect())
     return session
+
+
+def write_error_log_to_db():
+    engine = create_engine(f"sqlite:///{DB_NAME}", echo=True)
+    Base.metadata.create_all(engine)

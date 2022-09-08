@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 
 from loguru import logger
 
-from db import connect_db, History, STHistory
+from db import connect_db, History, STHistory, Balance
 
 from connection import client
 
@@ -150,6 +150,7 @@ def update_storage(
         with open(file_name, "r+", encoding="utf8") as my_coins_data:
             my_coins = json.loads(my_coins_data.read())
             history_dict = {"time": time, "price": coin_price}
+            data_base = connect_db()
             # if type_operation == TradeStatus.BUY.value:
             if type_operation == TradeStatus.BUY:
                 my_coins[coin_name]["buyPrice"] = coin_price
@@ -165,14 +166,16 @@ def update_storage(
                 # logger.info(f"Write stop_loss_price = {stop_loss_price}")
                 # logger.info(f"Write stop_loss_ratio = {user_settings['stop_loss_ratio']}")
             else:
-                possible_profit = _count_profit(my_coins[coin_name], coin_price)
+                profit = _count_profit(my_coins[coin_name], coin_price)
                 my_coins[coin_name]["buyPrice"] = 0.0
                 my_coins[coin_name]["sellPrice"] = coin_price
                 my_coins[coin_name]["sellTime"] = time
                 my_coins[coin_name]["stopLossPrice"] = 0.0
-                my_coins[coin_name]["balanse"] += possible_profit
+                my_coins[coin_name]["balanse"] += profit
                 history_dict["stopLossReason"] = stop_loss_reason
-                history_dict["profit"] = possible_profit
+                history_dict["profit"] = profit
+                data_base.add(Balance(coin_name=coin_name, balance=my_coins[coin_name]["balanse"]), profit=profit)
+                data_base.commit()
             # my_coins[coin_name]['currentPrice'] = coin_price
             my_coins[coin_name]["history"][type_operation].append(history_dict)
             my_coins[coin_name]["amount"] = amount
@@ -187,7 +190,6 @@ def update_storage(
             my_coins_data.write(json.dumps(my_coins, sort_keys=True, indent=2))
             my_coins_data.truncate()
 
-        data_base = connect_db()
         data_base.add(History(coin_name=coin_name, amount=amount, operation_type=type_operation, price=coin_price))
         data_base.commit()
         return True

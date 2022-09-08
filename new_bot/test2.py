@@ -174,8 +174,11 @@
 
 # # print(dir(x))
 
-a, b = [[1], 2]
-print(a)
-a[:] = 2, 3, 4
+# a, b = [[1], 2]
+# print(a)
+# a[:] = 2, 3, 4
 
-print(a)
+# print(a)
+
+
+print(121 // 60)

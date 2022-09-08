@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.10
 from decimal import Decimal
+from distutils.log import error
 import json
 import logging
 import time
-from typing import Dict
+from typing import Dict, Tuple
+import requests
 
 from loguru import logger
 
@@ -11,7 +13,9 @@ from telegram import Update
 
 from telegram.ext import CallbackContext, CommandHandler, Updater
 
-from db import create_db, connect_db, History
+import binance
+
+from db import create_db, connect_db, History, Log
 
 from logic import action_with_each_coin, action_with_each_coin2, get_klines_for_period, Buy, Sell
 
@@ -252,39 +256,87 @@ def sell_test():
         logger.info("Stopped by user")
 
 
+def error_processing(sleep_time: int, count: int, err, name) -> Tuple[int, int]:
+    count += 1
+    logger.info(f"Raise ERROR END Iteration {err}")
+    data_base = connect_db()
+    data_base.add(Log(error=err, error_type=name))
+    data_base.commit()
+    # time.sleep(60)
+    sleep_time += count // 30
+    time.sleep(sleep_time)
+    return sleep_time, count
+
+
 def all_test():
     user_settings = read_settings("settings.json")
 
     # START WHILE
-    logger.info("while True")
+    logger.info("Start while True")
     try:
         while True:
-            logger.info("Iteration")
+            count = 0
+            sleep_time = 60
+            try:
+                logger.info("Start Iteration")
 
-            file_name = "storage.json"
-            if TEST:
-                file_name = "storage_test.json"
-            with open(file_name, "r", encoding="utf8") as my_coins_data:
-                my_coins = json.loads(my_coins_data.read())
+                file_name = "storage.json"
+                if TEST:
+                    file_name = "storage_test.json"
+                with open(file_name, "r", encoding="utf8") as my_coins_data:
+                    my_coins = json.loads(my_coins_data.read())
 
-            file_name = "state.json"
-            if TEST:
-                file_name = "state_test.json"
-            with open(file_name, "r", encoding="utf8") as my_coins_data:
-                my_state = json.loads(my_coins_data.read())
+                file_name = "state.json"
+                if TEST:
+                    file_name = "state_test.json"
+                with open(file_name, "r", encoding="utf8") as my_coins_data:
+                    my_state = json.loads(my_coins_data.read())
 
-            send, final_message = action_with_each_coin2(my_coins, user_settings, my_state)
+                send, final_message = action_with_each_coin2(my_coins, user_settings, my_state)
 
-            if send:
-                # job = context.job
-                # final_message = my_sell.get_message_text()
-                text = "\n".join(final_message)
-                # context.bot.send_message(job.context, text=text)
-                logger.error(text)
-                # logger.error(final_message)
+                if send:
+                    # job = context.job
+                    # final_message = my_sell.get_message_text()
+                    text = "\n".join(final_message)
+                    # context.bot.send_message(job.context, text=text)
+                    logger.error(text)
+                    # logger.error(final_message)
 
-            logger.info("END Iteration")
-            time.sleep(60)
+                logger.info("END Iteration")
+                time.sleep(60)
+                if count:
+                    count = 0
+                    sleep_time = 60
+            except binance.error.ServerError as err:
+                sleep_time, count = error_processing(sleep_time, count, err, "ServerError")
+                # count += 1
+                # logger.info(f"Raise ERROR END Iteration {err}")
+                # data_base = connect_db()
+                # data_base.add(Log(error=err, error_type="ServerError"))
+                # data_base.commit()
+                # # time.sleep(60)
+                # sleep_time += count // 30
+                # time.sleep(sleep_time)
+            except ConnectionError as err:
+                sleep_time, count = error_processing(sleep_time, count, err, "ConnectionError")
+                # count += 1
+                # logger.info(f"Raise ERROR END Iteration {err}")
+                # data_base = connect_db()
+                # data_base.add(Log(error=err, error_type="ConnectionError"))
+                # data_base.commit()
+                # # time.sleep(60)
+                # sleep_time += count // 30
+                # time.sleep(sleep_time)
+            except requests.exceptions.ConnectionError as err:
+                sleep_time, count = error_processing(sleep_time, count, err, "ConnectionError Full desc")
+                # count += 1
+                # logger.info(f"Raise ERROR END Iteration {err}")
+                # data_base = connect_db()
+                # data_base.add(Log(error=err, error_type="ConnectionError"))
+                # data_base.commit()
+                # # time.sleep(60)
+                # sleep_time += count // 30
+                # time.sleep(sleep_time)
 
     except KeyboardInterrupt:
         logger.info("Stopped by user")
