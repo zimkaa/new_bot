@@ -1,10 +1,10 @@
 import datetime
-from decimal import Decimal
+
+# from decimal import Decimal
 
 from sqlalchemy import Column
-from sqlalchemy import DateTime
 from sqlalchemy import DECIMAL
-from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy import String
 
@@ -18,7 +18,7 @@ class STHistory(Base):
     stop_loss_price = Column(DECIMAL, nullable=False)
     time = Column(DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, *, coin_name: str, stop_loss_price: str):
+    def __init__(self, *, coin_name: str, stop_loss_price: float):
         self.coin_name = coin_name
         self.stop_loss_price = stop_loss_price
 

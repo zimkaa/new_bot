@@ -112,7 +112,11 @@ def _count_profit(coin: dict, current_price: float) -> float:
     # Example: (220 - 200) * 0.5 == 10
     # get_profit(coin['buyPrice'])
     no_proffit_sell = coin["buyPrice"] * float(COEFFICIENT_FOR_PROFIT)
-    return round((current_price - no_proffit_sell) * coin["amount"], 3)
+    logger.debug(f"{coin['amount']=} type {type(coin['amount'])}")
+    logger.debug(f"{no_proffit_sell=} type {type(no_proffit_sell)}")
+    result = round((current_price - no_proffit_sell) * coin["amount"], 3)
+    logger.debug(f"{result=} type {type(result)}")
+    return result
 
 
 def update_storage(
@@ -174,8 +178,15 @@ def update_storage(
                 my_coins[coin_name]["balanse"] += profit
                 history_dict["stopLossReason"] = stop_loss_reason
                 history_dict["profit"] = profit
-                data_base.add(Balance(coin_name=coin_name, balance=my_coins[coin_name]["balanse"]), profit=profit)
-                data_base.commit()
+                try:
+                    # bl = Decimal(my_coins[coin_name]["balanse"])
+                    # pr = Decimal(profit)
+                    bl = my_coins[coin_name]["balanse"]
+                    pr = profit
+                    data_base.add(Balance(coin_name=coin_name, balance=bl, result_value=pr))
+                    data_base.commit()
+                except Exception as err:
+                    logger.critical(f"ERROR {err=}")
             # my_coins[coin_name]['currentPrice'] = coin_price
             my_coins[coin_name]["history"][type_operation].append(history_dict)
             my_coins[coin_name]["amount"] = amount

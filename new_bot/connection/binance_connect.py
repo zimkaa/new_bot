@@ -1,8 +1,9 @@
 from binance.spot import Spot as Client
 
-from settings import KEY, SECRET
-
 from schemas import TradeStatus
+
+from settings import KEY
+from settings import SECRET
 
 
 # client = Client(base_url="https://testnet.binance.vision", key=KEY, secret=SECRET)

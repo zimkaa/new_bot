@@ -1,10 +1,9 @@
 #!/usr/bin/env python3.10
-from decimal import Decimal
-from distutils.log import error
 import json
 import logging
 import time
 from typing import Dict, Tuple
+
 import requests
 
 from loguru import logger
@@ -15,9 +14,9 @@ from telegram.ext import CallbackContext, CommandHandler, Updater
 
 import binance
 
-from db import create_db, connect_db, History, Log
+from db import create_db, connect_db, Log
 
-from logic import action_with_each_coin, action_with_each_coin2, get_klines_for_period, Buy, Sell
+from logic import action_with_each_coin
 
 from schemas import Ratios, Settings, ValidationError
 
@@ -180,82 +179,6 @@ def main() -> None:
     updater.idle()
 
 
-def buy_test():
-    user_settings = read_settings("settings.json")
-
-    # START WHILE
-    logger.info("while True")
-    try:
-        while True:
-            coin_name = "BTC"
-
-            file_name = "state.json"
-            if TEST:
-                file_name = "state_test.json"
-            with open(file_name, "r", encoding="utf8") as my_coins_data:
-                my_state = json.loads(my_coins_data.read())
-
-            list_klines = get_klines_for_period(coin_name, limit=60)
-
-            my_buy = Buy(user_settings, coin_name, my_state, list_klines)
-
-            my_buy.start()
-
-            send = my_buy.need_send_message()
-
-            if send:
-                # job = context.job
-                final_message = my_buy.get_message_text()
-                # text = "\n".join(final_message)
-                # context.bot.send_message(job.context, text=text)
-                # logger.error(text)
-                logger.error(final_message)
-
-            logger.info("END Iteration")
-            time.sleep(60)
-
-    except KeyboardInterrupt:
-        logger.info("Stopped by user")
-
-
-def sell_test():
-    user_settings = read_settings("settings.json")
-
-    # START WHILE
-    logger.info("while True")
-    try:
-        while True:
-            coin_name = "BTC"
-
-            file_name = "state.json"
-            if TEST:
-                file_name = "state_test.json"
-            with open(file_name, "r", encoding="utf8") as my_coins_data:
-                my_state = json.loads(my_coins_data.read())
-
-            list_klines = get_klines_for_period(coin_name, limit=60)
-
-            my_sell = Sell(user_settings, coin_name, my_state, list_klines)
-
-            my_sell.start()
-
-            send = my_sell.need_send_message()
-
-            if send:
-                # job = context.job
-                final_message = my_sell.get_message_text()
-                # text = "\n".join(final_message)
-                # context.bot.send_message(job.context, text=text)
-                # logger.error(text)
-                logger.error(final_message)
-
-            logger.info("END Iteration")
-            time.sleep(60)
-
-    except KeyboardInterrupt:
-        logger.info("Stopped by user")
-
-
 def error_processing(sleep_time: int, count: int, err, name) -> Tuple[int, int]:
     count += 1
     logger.info(f"Raise ERROR END Iteration {err}")
@@ -268,7 +191,7 @@ def error_processing(sleep_time: int, count: int, err, name) -> Tuple[int, int]:
     return sleep_time, count
 
 
-def all_test():
+def temporary_main():
     user_settings = read_settings("settings.json")
 
     # START WHILE
@@ -292,11 +215,10 @@ def all_test():
                 with open(file_name, "r", encoding="utf8") as my_coins_data:
                     my_state = json.loads(my_coins_data.read())
 
-                send, final_message = action_with_each_coin2(my_coins, user_settings, my_state)
+                send, final_message = action_with_each_coin(my_coins, user_settings, my_state)
 
                 if send:
                     # job = context.job
-                    # final_message = my_sell.get_message_text()
                     text = "\n".join(final_message)
                     # context.bot.send_message(job.context, text=text)
                     logger.error(text)
@@ -307,6 +229,12 @@ def all_test():
                 if count:
                     count = 0
                     sleep_time = 60
+            except binance.error.ClientError as err:
+                # logger.info(f"Account has insufficient balance for requested action!!!!\n {err}")
+                sleep_time, count = error_processing(
+                    sleep_time, count, err, "Account has insufficient balance for requested action!!!!\n"
+                )
+                break
             except binance.error.ServerError as err:
                 sleep_time, count = error_processing(sleep_time, count, err, "ServerError")
                 # count += 1
@@ -319,84 +247,21 @@ def all_test():
                 # time.sleep(sleep_time)
             except ConnectionError as err:
                 sleep_time, count = error_processing(sleep_time, count, err, "ConnectionError")
-                # count += 1
-                # logger.info(f"Raise ERROR END Iteration {err}")
-                # data_base = connect_db()
-                # data_base.add(Log(error=err, error_type="ConnectionError"))
-                # data_base.commit()
-                # # time.sleep(60)
-                # sleep_time += count // 30
-                # time.sleep(sleep_time)
             except requests.exceptions.ConnectionError as err:
                 sleep_time, count = error_processing(sleep_time, count, err, "ConnectionError Full desc")
-                # count += 1
-                # logger.info(f"Raise ERROR END Iteration {err}")
-                # data_base = connect_db()
-                # data_base.add(Log(error=err, error_type="ConnectionError"))
-                # data_base.commit()
-                # # time.sleep(60)
-                # sleep_time += count // 30
-                # time.sleep(sleep_time)
 
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as err:
         logger.info("Stopped by user")
+    #     data_base = connect_db()
+    #     data_base.add(Log(error=err, error_type="KeyboardInterrupt"))
+    #     data_base.commit()
+    # except Exception as err:
+    #     logger.warning(f"Raise ERROR {err}")
+    #     data_base = connect_db()
+    #     data_base.add(Log(error=err, error_type="Exception"))
+    #     data_base.commit()
 
 
 if __name__ == "__main__":
     create_db()
-    all_test()
-
-
-# def test_db():
-#     create_db()
-#     coin_name = "BTC"
-#     amount = Decimal(0.002)
-#     operation_type = "sell"
-#     price = Decimal(21000.54)
-#     data_base = connect_db()
-#     # data_base.add(History(coin_name=coin_name, amount=amount, operation_type=operation_type, price=price))
-#     # data_base.commit()
-#     result = data_base.query(History).filter(History.coin_name == coin_name).order_by(History.time.desc()).first()
-#     print(f"{result=}")
-
-
-# if __name__ == "__main__":
-#     test_db()
-
-
-# if __name__ == "__main__":
-
-#     user_settings = read_settings("settings.json")
-
-#     # START WHILE
-#     logger.info("while True")
-#     try:
-#         while True:
-#             logger.info("Iteration")
-#             file_name = "storage.json"
-#             if TEST:
-#                 file_name = "storage_test.json"
-#             with open(file_name, "r", encoding="utf8") as my_coins_data:
-#                 my_coins = json.loads(my_coins_data.read())
-
-#             file_name = "state.json"
-#             if TEST:
-#                 file_name = "state_test.json"
-#             with open(file_name, "r", encoding="utf8") as my_coins_data:
-#                 my_state = json.loads(my_coins_data.read())
-
-#             send, final_message = action_with_each_coin(my_coins, user_settings, my_state)
-
-#             if send:
-#                 # job = context.job
-#                 text = "\n".join(final_message)
-#                 # context.bot.send_message(job.context, text=text)
-#                 logger.error(text)
-
-#             logger.info("END Iteration")
-#             time.sleep(60)
-#     except KeyboardInterrupt:
-#         logger.info("Stopped by user")
-#     except Exception as err:
-#         logger.error("FUCK!!!!!!!!!!!!!!!!!!!!!!!!!")
-#         logger.error(f"{err}")
+    temporary_main()

@@ -2,9 +2,8 @@ import datetime
 from decimal import Decimal
 
 from sqlalchemy import Column
-from sqlalchemy import DateTime
 from sqlalchemy import DECIMAL
-from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy import String
 
@@ -12,7 +11,7 @@ from db import Base
 
 
 class History(Base):
-    __tablename__ = "history"
+    __tablename__ = "historys"
     id = Column(Integer, primary_key=True, autoincrement=True)
     coin_name = Column(String, nullable=False)
     amount = Column(DECIMAL, nullable=False)

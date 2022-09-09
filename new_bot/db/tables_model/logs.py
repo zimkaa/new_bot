@@ -2,8 +2,6 @@ import datetime
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime
-from sqlalchemy import DECIMAL
-from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 
@@ -22,7 +20,4 @@ class Log(Base):
         self.error_type = error_type
 
     def __repr__(self) -> str:
-        return (
-            f"Users(error={self.error!r}, "
-            f"error_type={self.error_type!r}, "
-        )
+        return f"Users(error={self.error!r}, " f"error_type={self.error_type!r}, "
