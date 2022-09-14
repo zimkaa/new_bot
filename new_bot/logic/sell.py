@@ -28,9 +28,9 @@ class Sell(Action):
             stop_loss_reason = True
             coin_price = self.list_klines[-1].close_price
             if self.coin_name == "BTC":
-                amount = 0.00245
+                amount = 0.00244
             else:
-                amount = 5.9
+                amount = 5.8
             status_buy = True
             type_operation = TradeStatus.SELL
             time_sell = self.list_klines[-1].time_open.strftime(TIME_FORMAT)
