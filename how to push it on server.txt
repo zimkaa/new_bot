@@ -1,0 +1,22 @@
+1    -  # download from github zip archive
+2    -  scp ~/Downloads/new_bot-develop.zip root@185.255.132.215:/root/develop/  # copy archive to server
+3    -  unzip new_bot-develop.zip  # unzip archive on server
+4    -  cd develop/new_bot-develop/  # go inside folder
+5    -  python3 -m venv .venv  # create virtual envirinment
+6    -  source .venv/bin/activate  # activate virtual envirinment
+7.1  -  cp ./storage_example.json ./storage.json  # copy empty storage.json
+7.2  -  cp ./state_example.json ./state.json  # copy empty state.json
+8    -  pip install -r requirements.txt  # install requirements
+9    -  jobs -l  # finde jobs... Actualy I don't remeber.
+10   -  ps -C python3  # finde process that started from python
+11   -  kill -9 PID  # kill the process
+12   -  python3 new_bot/bot.py > /dev/null 2>&1 &  # start process and detach
+12.1 -  python3 new_bot/bot.py  # start for test
+13   -  head -n 10 ~/develop/new_bot-develop/storage.json  # to see first 10 lines
+14   -  tail -n 10 ~/develop/new_bot-develop/bot.log  # to see last 10 lines
+15   -  rm -rf new*  # delete all files like new*****
+16   -  scp root@185.255.132.215:/root/develop/new_bot-develop/files/my.db ~/test/data_from_server/my.db  # copy db from server
+17   -  scp root@185.255.132.215:/root/develop/new_bot-develop/bot.log ~/test/data_from_server/bot.log  # copy log from server
+17   -  scp ~/PetProject/NL/dungeon/examples/captcha/* root@185.255.132.215:/root/tests/examples/  # copy log from server
+
+scp root@185.255.132.215:/root/tests/first/ ~/test/data_from_server/

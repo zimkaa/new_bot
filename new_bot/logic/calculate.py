@@ -1,4 +1,4 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 from loguru import logger
 
@@ -30,7 +30,7 @@ def choose_an_action(status: bool) -> str:
 ACTION: Dict[str, Action] = {"BUY": Buy, "SELL": Sell}
 
 
-def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -> Tuple[bool, list[str]]:
+def action_with_each_coin(my_coins: dict, user_settings: dict, my_state: dict) -> Tuple[bool, List[str]]:
     final_message = []
     send = False
     # update = False

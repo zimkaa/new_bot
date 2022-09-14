@@ -112,10 +112,10 @@ def _count_profit(coin: dict, current_price: float) -> float:
     # Example: (220 - 200) * 0.5 == 10
     # get_profit(coin['buyPrice'])
     no_proffit_sell = coin["buyPrice"] * float(COEFFICIENT_FOR_PROFIT)
-    logger.debug(f"{coin['amount']=} type {type(coin['amount'])}")
-    logger.debug(f"{no_proffit_sell=} type {type(no_proffit_sell)}")
+    # logger.debug(f"{coin['amount']=} type {type(coin['amount'])}")
+    # logger.debug(f"{no_proffit_sell=} type {type(no_proffit_sell)}")
     result = round((current_price - no_proffit_sell) * coin["amount"], 3)
-    logger.debug(f"{result=} type {type(result)}")
+    # logger.debug(f"{result=} type {type(result)}")
     return result
 
 

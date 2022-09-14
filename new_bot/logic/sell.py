@@ -80,19 +80,32 @@ class Sell(Action):
             logger.info(f"We have a grow {self.coin_name} up to {rounded_change}")
         else:
             logger.info(f"We have a fall {self.coin_name} down to {rounded_change}")
-        buy_price = Decimal(reed_store(self.coin_name)["buyPrice"])
         coin_info = reed_store(self.coin_name)
+        buy_price = Decimal(coin_info["buyPrice"])
         stop_loss_price = Decimal(coin_info["stopLossPrice"])
         new_stop_loss = Decimal(item.low_price) * COEFFICIENT_DOWN_TO
-        if item.low_price > (buy_price * COEFFICIENT_RISE_UP_TO) and new_stop_loss > stop_loss_price:
-            action = update_stop_loss_price(self.coin_name, rounding_to_float(new_stop_loss))
+
+        new_stop_loss2 = Decimal(item.low_price) * Decimal(1 - 0.2 / 100)
+
+        if item.low_price > (buy_price * Decimal(1 + 1 / 100)) and new_stop_loss2 > stop_loss_price:
+            action = update_stop_loss_price(self.coin_name, rounding_to_float(new_stop_loss2))
             if action:
-                logger.debug("update_stop_loss_price action in check_fall")
+                logger.debug("update_stop_loss_price action item.low_price > buy_price * 1,01")
             else:
                 logger.warning("Trouble with update_stop_loss_price")
-            logger.debug(f"WE UPDATE STOP LOSS PRICE {self.coin_name} to {new_stop_loss}")
+            logger.debug(f"WE UPDATE STOP LOSS PRICE {self.coin_name} to {new_stop_loss2}")
             logger.warning(f"NOW PRICE to {self.list_klines[-1].close_price}")
             return True
+        else:
+            if item.low_price > (buy_price * COEFFICIENT_RISE_UP_TO) and new_stop_loss > stop_loss_price:
+                action = update_stop_loss_price(self.coin_name, rounding_to_float(new_stop_loss))
+                if action:
+                    logger.debug("update_stop_loss_price action in check_fall")
+                else:
+                    logger.warning("Trouble with update_stop_loss_price")
+                logger.debug(f"WE UPDATE STOP LOSS PRICE {self.coin_name} to {new_stop_loss}")
+                logger.warning(f"NOW PRICE to {self.list_klines[-1].close_price}")
+                return True
         return False
 
     def _check_stop_loss(self) -> bool:

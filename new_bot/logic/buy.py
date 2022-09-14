@@ -73,10 +73,11 @@ class Buy(Action):
             logger.info("Ignore sell_price. It must work only with the first start")
 
         change_persent = get_rounded_change(self.list_klines[offset])
-        first_condition = change_persent <= -TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY
-        second_condition = coin_price < (sell_price * COEFFICIENT_WAIT_AFTER_SELL)
 
+        first_condition = change_persent <= -TRIGGER_PRICE_FALL_PER_MINUTE_FOR_BUY  # change_persent <= -0.002
+        second_condition = coin_price < (sell_price * COEFFICIENT_WAIT_AFTER_SELL)
         third_condition = change_persent < 0
+
         if third_condition:
             new_offset = offset - 1
             all_change = change_persent
