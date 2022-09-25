@@ -13,6 +13,13 @@ from .main_settings import SECRET
 from .main_settings import TOKEN
 from .main_settings import TIME_FORMAT
 from .main_settings import TEST
+from .main_settings import STATE_FILE
+from .main_settings import STATE_FILE_TEST
+from .main_settings import STATE_FILE_SIMPLE
+from .main_settings import STORAGE_FILE
+from .main_settings import STORAGE_FILE_TEST
+from .main_settings import STORAGE_FILE_SIMPLE
+from .main_settings import SETTINGS_FILE
 
 from .const import COEFFICIENT_DOWN_TO
 from .const import COEFFICIENT_FOR_PROFIT

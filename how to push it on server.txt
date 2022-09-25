@@ -1,7 +1,8 @@
 1    -  # download from github zip archive
 2    -  scp ~/Downloads/new_bot-develop.zip root@185.255.132.215:/root/develop/  # copy archive to server
-3    -  unzip new_bot-develop.zip  # unzip archive on server
-4    -  cd develop/new_bot-develop/  # go inside folder
+3    -  cd develop # go inside folder
+4    -  unzip new_bot-develop.zip  # unzip archive on server
+4.1  -  cd new_bot-develop/  # go inside folder
 5    -  python3 -m venv .venv  # create virtual envirinment
 6    -  source .venv/bin/activate  # activate virtual envirinment
 7.1  -  cp ./storage_example.json ./storage.json  # copy empty storage.json
@@ -19,4 +20,25 @@
 17   -  scp root@185.255.132.215:/root/develop/new_bot-develop/bot.log ~/test/data_from_server/bot.log  # copy log from server
 17   -  scp ~/PetProject/NL/dungeon/examples/captcha/* root@185.255.132.215:/root/tests/examples/  # copy log from server
 
+rm -rf bot.log
+cd files/
+rm -rf my.db
+cp ~/develop/new_bot-develop/storage_example.json ~/develop/new_bot-develop/storage.json
+
 scp root@185.255.132.215:/root/tests/first/ ~/test/data_from_server/
+
+
+
+simple bot
+
+
+1    -  mkdir simple
+2    -  scp ~/Downloads/new_bot-develop.zip root@185.255.132.215:/root/simple/  # copy archive to server
+3    -  cd simple
+7.1  -  cp ./storage_example.json ./storage_simple.json  # copy empty storage.json
+7.2  -  cp ./state_example.json ./state_simple.json  # copy empty state.json
+12   -  python3 new_bot/simple_bot.py > /dev/null 2>&1 &  # start process and detach
+12.1 -  python3 new_bot/simple_bot.py # start for test
+
+
+

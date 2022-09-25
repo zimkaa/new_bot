@@ -4,8 +4,6 @@ import logging
 import time
 from typing import Dict, Tuple
 
-from settings import TOKEN, TEST, STORAGE_FILE, SETTINGS_FILE, STORAGE_FILE_TEST, STATE_FILE, STATE_FILE_TEST
-
 import requests
 
 from loguru import logger
@@ -18,9 +16,11 @@ import binance
 
 from db import create_db, connect_db, Log
 
-from logic import action_with_each_coin
+from logic import action_with_each_coin_simple
 
 from schemas import Ratios, Settings, ValidationError
+
+from settings import TOKEN, TEST, STORAGE_FILE_SIMPLE, STATE_FILE_SIMPLE, SETTINGS_FILE, STORAGE_FILE
 
 
 # Enable logging
@@ -28,7 +28,7 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s
 # logger = logging.getLogger(__name__)
 
 logger.add(
-    "bot.log",
+    "simple_bot.log",
     format="{time} {level} {message}",
     level="DEBUG",
     rotation="1 week",
@@ -85,7 +85,7 @@ def start_trade(context: CallbackContext) -> None:
     with open(STORAGE_FILE, "r", encoding="utf8") as my_coins_data:
         my_coins = json.loads(my_coins_data.read())
 
-    send, final_message = action_with_each_coin(my_coins, user_settings)
+    send, final_message = action_with_each_coin_simple(my_coins, user_settings)
 
     if send:
         job = context.job
@@ -192,11 +192,10 @@ def error_processing(sleep_time: int, count: int, err, name) -> Tuple[int, int]:
     return sleep_time, count
 
 
-def temporary_main():
-    user_settings = read_settings(SETTINGS_FILE)
-
+def simple_main():
     # START WHILE
     logger.info("Start while True")
+    user_settings = dict()
     try:
         while True:
             count = 0
@@ -204,19 +203,15 @@ def temporary_main():
             try:
                 logger.info("Start Iteration")
 
-                file_name = STORAGE_FILE
-                if TEST:
-                    file_name = STORAGE_FILE_TEST
+                file_name = STORAGE_FILE_SIMPLE
                 with open(file_name, "r", encoding="utf8") as my_coins_data:
                     my_coins = json.loads(my_coins_data.read())
 
-                file_name = STATE_FILE
-                if TEST:
-                    file_name = STATE_FILE_TEST
+                file_name = STATE_FILE_SIMPLE
                 with open(file_name, "r", encoding="utf8") as my_coins_data:
                     my_state = json.loads(my_coins_data.read())
 
-                send, final_message = action_with_each_coin(my_coins, user_settings, my_state)
+                send, final_message = action_with_each_coin_simple(my_coins, user_settings, my_state)
 
                 if send:
                     # job = context.job
@@ -231,21 +226,12 @@ def temporary_main():
                     count = 0
                     sleep_time = 60
             except binance.error.ClientError as err:
-                # logger.info(f"Account has insufficient balance for requested action!!!!\n {err}")
                 sleep_time, count = error_processing(
                     sleep_time, count, err, "Account has insufficient balance for requested action!!!!\n"
                 )
                 break
             except binance.error.ServerError as err:
                 sleep_time, count = error_processing(sleep_time, count, err, "ServerError")
-                # count += 1
-                # logger.info(f"Raise ERROR END Iteration {err}")
-                # data_base = connect_db()
-                # data_base.add(Log(error=err, error_type="ServerError"))
-                # data_base.commit()
-                # # time.sleep(60)
-                # sleep_time += count // 30
-                # time.sleep(sleep_time)
             except ConnectionError as err:
                 sleep_time, count = error_processing(sleep_time, count, err, "ConnectionError")
             except requests.exceptions.ConnectionError as err:
@@ -253,24 +239,17 @@ def temporary_main():
 
     except KeyboardInterrupt as err:
         logger.info("Stopped by user")
-    #     data_base = connect_db()
-    #     data_base.add(Log(error="KeyboardInterrupt", error_type="KeyboardInterrupt"))
-    #     data_base.commit()
-    # except Exception as err:
-    #     logger.warning(f"Raise ERROR {err}")
-    #     data_base = connect_db()
-    #     data_base.add(Log(error=err, error_type="Exception"))
-    #     data_base.commit()
+        data_base = connect_db()
+        data_base.add(Log(error="KeyboardInterrupt", error_type="KeyboardInterrupt"))
+        data_base.commit()
+    except Exception as err:
+        logger.warning(f"Raise ERROR {err}")
+        data_base = connect_db()
+        string_to_db = f"{err}"
+        data_base.add(Log(error=string_to_db, error_type="Exception"))
+        data_base.commit()
 
 
 if __name__ == "__main__":
-    # # создаём парсер аргументов и передаём их
-    # ap = argparse.ArgumentParser()
-    # # ap.add_argument("-d", "--db-name", required=True, help="path to input database")
-    # ap.add_argument("-d", "--db-name", help="path to input database")
-    # args = vars(ap.parse_args())
-
-    # if DB_NAME:
-    # DB_NAME = args["db_name"]
     create_db()
-    temporary_main()
+    simple_main()

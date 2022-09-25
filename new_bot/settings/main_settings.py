@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 from decimal import Decimal
 
 from dotenv import load_dotenv
@@ -6,7 +8,48 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_NAME = os.getenv("DB_NAME", "files/my.db")
+
+# создаём парсер аргументов и передаём их
+ap = argparse.ArgumentParser()
+ap.add_argument("-d", "--db-name", help="path to input database")
+# ap.add_argument("-t", "--test", help="run with test mode. it means 'trades operation will not execute'")
+args = vars(ap.parse_args())
+
+
+# if sys.version_info >= (3, 10):
+#     from typing import TypeAlias  # it's for 3.10 Python
+
+#     not_negative_float: TypeAlias = confloat(strict=True, ge=0.0)  # it's for 3.10 Python
+# else:
+#     not_negative_float = confloat(strict=True, ge=0.0)  # it's for 3.8 Python
+
+# if db_path := args["db_name"]:  # it's for 3.10 Python
+if args["db_name"]:  # it's for 3.8 Python
+    db_path = args["db_name"]
+    # DB_NAME = os.getenv("DB_NAME", "files/my.db")
+    # DB_NAME = os.getenv("DB_NAME", db_path)
+    DB_NAME = db_path
+else:
+    DB_NAME = os.getenv("DB_NAME", "files/my_simple.db")
+    # DB_NAME = os.getenv("DB_NAME", "files/my.db")
+
+# DB_NAME = os.getenv("DB_NAME", "files/my.db")
+# DB_NAME = os.getenv("DB_NAME", "files/my_simple.db")
+
+print(f"{DB_NAME=}")
+# DB_NAME_SIMPLE = os.getenv("DB_NAME_SIMPLE", "files/my_simple.db")
+
+STATE_FILE = os.getenv("STATE_FILE", "state.json")
+STATE_FILE_TEST = os.getenv("STATE_FILE_TEST", "state_test.json")
+STATE_FILE_SIMPLE = os.getenv("STATE_FILE_SIMPLE", "state_simple.json")
+
+STORAGE_FILE = os.getenv("STORAGE_FILE", "storage.json")
+STORAGE_FILE_TEST = os.getenv("STORAGE_FILE_TEST", "storage_test.json")
+STORAGE_FILE_SIMPLE = os.getenv("STORAGE_FILE_SIMPLE", "storage_simple.json")
+
+SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.json")
+# STORAGE_FILE_TEST = os.getenv("STORAGE_FILE_TEST", "storage_test.json")
+# STORAGE_FILE_SIMPLE = os.getenv("STORAGE_FILE_SIMPLE", "storage_simple.json")
 
 TOKEN = os.getenv("TOKEN")
 
@@ -21,6 +64,10 @@ TRADE = os.getenv("TRADE", "ON")
 
 # TEST = True
 TEST = False
+
+# 1 - first strategy
+# 2 - new strategy byt and sell when + 1%
+STRATEGY = os.getenv("STRATEGY", 1)
 
 TIME_FORMAT = os.getenv("TIME_FORMAT", "%Y-%m-%d %H:%M:%S")
 

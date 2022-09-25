@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from loguru import logger
 
-from connection import trade_market
+from connection import trade_market, trade_limit, get_price_now
 
 from schemas import Action, TradeStatus
 
@@ -16,10 +16,71 @@ from settings import (
 from .actions import (
     get_rounded_change,
     reed_store,
+    reed_store_simple,
     rounding_to_float,
     update_stop_loss_price,
     update_storage,
+    update_storage_simple,
 )
+
+
+class SellSimple(Action):
+    def start(self) -> None:
+        if self._check_stop_loss():
+            stop_loss_reason = True
+            coin_price = self.list_klines[-1].close_price
+            if self.coin_name == "BTC":
+                amount = 0.00244
+            else:
+                amount = 5.8
+            status_buy = True
+            type_operation = TradeStatus.SELL
+            time_sell = self.list_klines[-1].time_open.strftime(TIME_FORMAT)
+            action = update_storage_simple(
+                self.coin_name,
+                coin_price,
+                amount,
+                status_buy,
+                type_operation,
+                time_sell,
+                self.user_settings,
+                stop_loss_reason,
+            )
+            if action:
+                logger.debug("Update_storage action in check_fall")
+            else:
+                logger.warning("Trouble with update_storage")
+
+            if ONLINE_TRADE:
+                if self.coin_name == "BTC":
+                    stop_loss_price = self.coin_info["stopLossPrice"]
+                    trade_limit(self.coin_name, type_operation, amount, stop_loss_price)
+
+            text = f"Need to sell {self.coin_name} time_open {time_sell}"
+            logger.error(text)
+
+        else:
+            last_kline_time = self.list_klines[-1].time_open.strftime(TIME_FORMAT)
+            text = f"Not time to sell yet {self.coin_name} {last_kline_time}"
+            logger.debug(text)
+
+        self.message += text
+
+
+    def _check_stop_loss(self) -> bool:
+        """_summary_
+
+        :return: result of these conditions
+        :rtype: bool
+        """
+        self.coin_info = reed_store_simple(self.coin_name)
+        stop_loss_price = self.coin_info["stopLossPrice"]
+        price = get_price_now(self.coin_name)
+        if price > stop_loss_price:
+            logger.warning(f"Stoploss sell {self.coin_name} price now {price}")
+            logger.error(f"We need to sell now {self.coin_name} {self.list_klines[-1].time_open}")
+            return True
+        return False
 
 
 class Sell(Action):
