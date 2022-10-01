@@ -54,7 +54,16 @@ class SellSimple(Action):
             if ONLINE_TRADE:
                 if self.coin_name == "BTC":
                     stop_loss_price = self.coin_info["stopLossPrice"]
-                    trade_limit(self.coin_name, type_operation, amount, stop_loss_price)
+                    print(f"type{type(stop_loss_price)}  {stop_loss_price=}")
+                    text = f"type{type(stop_loss_price)}  {stop_loss_price=}"
+                    logger.error(text)
+                    text = f"type{type(self.coin_name)}  {self.coin_name=}"
+                    logger.error(text)
+                    text = f"type{type(type_operation)}  {type_operation=}"
+                    logger.error(text)
+                    text = f"type{type(amount)}  {amount=}"
+                    logger.error(text)
+                    trade_limit(self.coin_name, type_operation, amount, float(stop_loss_price))
 
             text = f"Need to sell {self.coin_name} time_open {time_sell}"
             logger.error(text)
@@ -65,7 +74,6 @@ class SellSimple(Action):
             logger.debug(text)
 
         self.message += text
-
 
     def _check_stop_loss(self) -> bool:
         """_summary_

@@ -181,7 +181,7 @@ def main() -> None:
 
 def error_processing(sleep_time: int, count: int, err, name) -> Tuple[int, int]:
     count += 1
-    logger.info(f"Raise ERROR END Iteration {err}")
+    logger.info(f"Raise ERROR END Iteration {err=}")
     data_base = connect_db()
     string_to_db = f"{err}"
     data_base.add(Log(error=string_to_db, error_type=name))

@@ -11,6 +11,8 @@
 9    -  jobs -l  # finde jobs... Actualy I don't remeber.
 10   -  ps -C python3  # finde process that started from python
 11   -  kill -9 PID  # kill the process
+11   -  vim new_bot/settings/main_settings.py
+11   -  
 12   -  python3 new_bot/bot.py > /dev/null 2>&1 &  # start process and detach
 12.1 -  python3 new_bot/bot.py  # start for test
 13   -  head -n 10 ~/develop/new_bot-develop/storage.json  # to see first 10 lines
@@ -37,6 +39,9 @@ simple bot
 3    -  cd simple
 7.1  -  cp ./storage_example.json ./storage_simple.json  # copy empty storage.json
 7.2  -  cp ./state_example.json ./state_simple.json  # copy empty state.json
+12.1 -  export TG=
+12.1 -  export DIF_TG=
+12.1 -  vim new_bot/settings/main_settings.py
 12   -  python3 new_bot/simple_bot.py > /dev/null 2>&1 &  # start process and detach
 12.1 -  python3 new_bot/simple_bot.py # start for test
 

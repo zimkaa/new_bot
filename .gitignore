@@ -14,6 +14,7 @@ __pycache__/
 # */test*.py
 *.log
 storage.json
+storage_simple.json
 storage copy.json
 state.json
 test.json
@@ -22,6 +23,7 @@ test copy.json
 test_trade_answer*
 history.json
 my.db
+my_simple.db
 *.log.zip
 
 # dotenv

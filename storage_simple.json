@@ -1,126 +1,48 @@
 {
   "BTC": {
-    "amount": 0.00244,
-    "balanse": 3.475,
-    "buyPrice": 0.0,
-    "buyTime": "2022-09-25 00:26:00",
+    "amount": 0.00246,
+    "balanse": 0.0,
+    "buyPrice": 19257.68,
+    "buyTime": "2022-10-01 14:36:00",
     "currentPrice": 0.0,
     "desiredPriceFall": 0.4,
     "history": {
       "BUY": [
         {
-          "price": 18975.22,
-          "time": "2022-09-19 20:42:00"
-        },
-        {
-          "price": 19113.22,
-          "time": "2022-09-20 15:14:00"
-        },
-        {
-          "price": 18725.73,
-          "time": "2022-09-21 21:00:00"
-        },
-        {
-          "price": 19001.95,
-          "time": "2022-09-21 21:09:00"
-        },
-        {
-          "price": 19273.64,
-          "time": "2022-09-21 22:29:00"
-        },
-        {
-          "price": 18899.82,
-          "time": "2022-09-23 14:48:00"
-        },
-        {
-          "price": 18901.49,
-          "time": "2022-09-25 00:26:00"
+          "price": 19257.68,
+          "time": "2022-10-01 14:36:00"
         }
       ],
-      "SELL": [
-        {
-          "price": 19169.83,
-          "profit": 0.402,
-          "stopLossReason": true,
-          "time": "2022-09-19 22:00:00"
-        },
-        {
-          "price": 19308.98,
-          "profit": 0.404,
-          "stopLossReason": true,
-          "time": "2022-09-21 16:16:00"
-        },
-        {
-          "price": 19170.85,
-          "profit": 1.019,
-          "stopLossReason": true,
-          "time": "2022-09-21 21:02:00"
-        },
-        {
-          "price": 19204.27,
-          "profit": 0.421,
-          "stopLossReason": true,
-          "time": "2022-09-21 21:34:00"
-        },
-        {
-          "price": 19473.64,
-          "profit": 0.414,
-          "stopLossReason": true,
-          "time": "2022-09-22 22:47:00"
-        },
-        {
-          "price": 19093.9,
-          "profit": 0.401,
-          "stopLossReason": true,
-          "time": "2022-09-24 14:31:00"
-        },
-        {
-          "price": 19100.85,
-          "profit": 0.414,
-          "stopLossReason": true,
-          "time": "2022-09-25 10:30:00"
-        }
-      ]
+      "SELL": []
     },
-    "sellPrice": 19100.85,
-    "sellTime": "2022-09-25 10:30:00",
+    "sellPrice": 0.0,
+    "sellTime": "1999-06-11 11:11:11",
     "status": {
-      "buy": true
+      "buy": false
     },
-    "stopLossPrice": 0.0
+    "stopLossPrice": 19450.2568
   },
   "NEAR": {
     "amount": 6.0,
-    "balanse": 0.207,
-    "buyPrice": 4.005,
-    "buyTime": "2022-09-20 12:01:00",
+    "balanse": 0.0,
+    "buyPrice": 3.552,
+    "buyTime": "2022-10-01 14:35:00",
     "currentPrice": 0.0,
     "desiredPriceFall": 1.0,
     "history": {
       "BUY": [
         {
-          "price": 3.948,
-          "time": "2022-09-19 20:41:00"
-        },
-        {
-          "price": 4.005,
-          "time": "2022-09-20 12:01:00"
+          "price": 3.552,
+          "time": "2022-10-01 14:35:00"
         }
       ],
-      "SELL": [
-        {
-          "price": 3.989,
-          "profit": 0.207,
-          "stopLossReason": true,
-          "time": "2022-09-19 21:32:00"
-        }
-      ]
+      "SELL": []
     },
     "sellPrice": 0.0,
-    "sellTime": "2022-09-19 21:32:00",
+    "sellTime": "1999-06-11 11:11:11",
     "status": {
       "buy": false
     },
-    "stopLossPrice": 4.04505
+    "stopLossPrice": 3.58752
   }
 }
